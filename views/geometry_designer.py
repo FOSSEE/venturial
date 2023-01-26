@@ -28,7 +28,6 @@ class geometry_designer:
         split = row3.split()
         r3col1 = split.column().row()
         r3col2 = split.column().row()
-        r3col1.prop(cs, "mode", expand=True)
         r3col2.prop(cs, "ctm", slider=True)
         
         row4 = sec2.row()

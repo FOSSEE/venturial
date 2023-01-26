@@ -11,16 +11,6 @@ class mesh_file_manager:
         row1 = ptr.row(align=True)
         row1.scale_y = 1.05
             
-        if cs.meshing_tool_type_expand:
-            
-            row1.prop(cs, "meshing_tool_type", text = None if cs.meshing_tool_type_expand == True else "", expand = cs.meshing_tool_type_expand)
-            row1.prop(cs, "meshing_tool_type_expand", text = "", icon = "FRAME_PREV" if cs.meshing_tool_type_expand == True else "FRAME_NEXT")        
-            
-        else:
-            row1.label(text="Meshing Tool:")
-            row1.prop(cs, "meshing_tool_type", text = None if cs.meshing_tool_type_expand == True else "", expand = cs.meshing_tool_type_expand)
-            row1.prop(cs, "meshing_tool_type_expand", text = "", icon = "FRAME_PREV" if cs.meshing_tool_type_expand == True else "FRAME_NEXT")        
-        
         row2 = ptr.row(align=False)
         row2.scale_y = 1.35
         row2.active_default = True

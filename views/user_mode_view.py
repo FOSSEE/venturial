@@ -1,6 +1,7 @@
 from bpy.types import Panel, Menu
 import bpy, os, json 
 
+from venturial.models.blockmesh_panel_operators import *
 from venturial.models.help_menu_operators import *
 from venturial.models.developer_menu_operators import *
 from venturial.models.header_operators import *
@@ -123,6 +124,50 @@ class AboutFossee(Menu):
         return context.window_manager.invoke_popup(self, width=380)
     
 
+class FileMenu(Menu):
+    """File Menu options"""
+    bl_label = "File" 
+    bl_idname = "VNT_MT_file_menu"
+    bl_description = "Open File Menu"
+    
+    def draw(self, context):
+        layout = self.layout
+    
+        row1 = layout.row()
+        row1.operator(VNT_OT_new_mesh_file.bl_idname, text="New Mesh", icon="FILE_NEW")
+        
+        row2 = layout.row()
+        row2.operator(VNT_OT_build_mesh.bl_idname, text="Build Mesh", icon="SHADERFX")
+        
+        row3 = layout.row()
+        row3.operator(VNT_OT_user_general_settings.bl_idname, text = "Settings", icon="PREFERENCES")
+        
+        row4 = layout.row()
+        row4.menu(DevMenu.bl_idname, text="Development", icon="RNA_ADD")
+
+class UICategory(Panel):
+    """A pop-up UI panel for Venturial's tools for Meshing, Solving and Post-processing"""
+    bl_idname = "VNT_PT_uicategory"
+    bl_label = ""
+    bl_space_type =  "VIEW_3D"   
+    bl_region_type = "UI"
+    bl_options = {'INSTANCED'}
+
+    def draw(self, context):
+        layout = self.layout
+        cs = context.scene
+        
+        row1 = layout.row()
+        row1.operator(VNT_OT_venturial_maintools.bl_idname, text="BlockMesh", depress=True if cs.tool_type == "BlockMesh" else False).maintools = "BlockMesh"
+        row1.operator(VNT_OT_venturial_maintools.bl_idname, text="SnappyHexMesh", depress=True if cs.tool_type == "SnappyHexMesh" else False).maintools = "SnappyHexMesh"
+        
+        row2 = layout.row()
+        row2.operator(VNT_OT_venturial_maintools.bl_idname, text="Simulation", depress=True if cs.tool_type == "Simulation" else False).maintools = "Simulation"
+        
+        row3 = layout.row()
+        row3.operator(VNT_OT_venturial_maintools.bl_idname, text="Post-Processing", depress=True if cs.tool_type == "Post-Processing" else False).maintools = "Post-Processing"
+        
+
 class UserModeView(Panel):
     """Main Panel Layout of User Mode"""
     bl_idname = "VNT_PT_usermodeview"
@@ -130,20 +175,24 @@ class UserModeView(Panel):
     bl_space_type =  "VIEW_3D"   
     bl_region_type = "UI"
     bl_category = "Venturial"
+   
     
     def draw_header(self, context):
         layout = self.layout   
         cs = context.scene
              
-        row = layout.row(align = True)  
-        row.prop(cs, "category", text=None if cs.category_expand == True else "", expand = cs.category_expand, emboss = True)
-        row.prop(cs, "category_expand", text = "", icon = "FRAME_PREV" if cs.category_expand == True else "FRAME_NEXT")
-        row.operator(VNT_OT_user_general_settings.bl_idname, text = "", icon="PREFERENCES")
-         
+        row = layout.row(align = True) 
+        row.menu(FileMenu.bl_idname, text="File")
+        
+        row = layout.row(align = True)
+        row.popover(UICategory.bl_idname, text=cs.ui_category) 
+        
+        row = layout.row()        
+        row.prop(cs, "mode", icon_only=True, expand = True)
         row = layout.row()
         
         x = context.region.width
-        scale_left = 0.00380986745213549*x - 1.2709867452135493 if cs.category_expand == True else 0.0049986745213549*x - 1.2709867452135493
+        scale_left = 0.00380986745213549*x - 1.2709867452135493 #if cs.category_expand == True else 0.0049986745213549*x - 1.2709867452135493
         
         row.scale_x = scale_left 
         row.label(icon='BLANK1')
@@ -152,7 +201,7 @@ class UserModeView(Panel):
         layout.menu(AboutVenturial.bl_idname, text="  Venturial  ", icon_value=banner_obj["venturial_logo"].icon_id)
         
         row = layout.row(align=True)
-        scale_right = 0.0039970986745213549*x - 0.83 if cs.category_expand == True else 0.00397986745213549*x - 0.83
+        scale_right = 0.0039970986745213549*x - 0.83 #if cs.category_expand == True else 0.00397986745213549*x - 0.83
         row.scale_x = scale_right
         row.label(icon='BLANK1')
         
@@ -160,7 +209,6 @@ class UserModeView(Panel):
         layout.menu(AboutFossee.bl_idname, text="  FOSSEE  ", icon_value=fossee_obj["fossee_logo"].icon_id)    
         
         layout.menu(HelpMenu.bl_idname, text="  Help  ", icon="QUESTION")
-        layout.menu(DevMenu.bl_idname, text="Dev")
        
         layout.alert = True
         layout.operator(VNT_OT_close_venturial.bl_idname, text="", icon="PANEL_CLOSE")
@@ -168,35 +216,129 @@ class UserModeView(Panel):
         
     def draw(self, context):
         layout = self.layout
+        cs = context.scene
+        x = cs.scene_blockmesh_panel_categories
         
-        row1 = layout.row()
-        split = row1.split(factor=0.35, align=False)
-                    
-        r1col1 = split.column()
+        row1 = layout.row(align=True)
         
-        r1col1a = r1col1.row()
-        r1col1b = r1col1.row()
-        r1col1c = r1col1.row()
+        c1 = row1.split(factor=0.2, align=True)
+        c1a = c1.row(align=True).box() if x != "Recents" else c1.row(align=True)
+        c1b = c1.row(align=True)
         
-        r1col2 = split.column()
+        c2 = c1b.split(factor=0.25, align=True)
+        c2a = c2.row(align=True).box() if x != "Design" else c2.row(align=True)
+        c2b = c2.row(align=True)
         
-        r1col2a = r1col2.row().column()
-        r1col2b = r1col2.row().column()
-        r1col2c = r1col2.row()
-            
-        getattr(mesh_file_manager(), "draw")(r1col1a.box(), context)
-        getattr(get_vertices(), "draw")(r1col1b.box(), context)
-        getattr(boundary_control(), "draw")(r1col1c.box(), context)
+        c3 = c2b.split(factor=0.33, align=True)
         
-        if context.scene.geo_design_options == "Design":
-            getattr(geometry_designer(), "draw")(r1col2a, context)
-        elif context.scene.geo_design_options == "Edges":
-            getattr(edges_panel(), "draw")(r1col2a, context)
-        #elif context.scene.geo_design_options == "Visualization":
-            #getattr(visualization_panel(), "draw")(r1col2a, context)
+        c3a = c3.row(align=True).box() if x != "Edges" else c3.row(align=True)
+        c3b = c3.row(align=True)
+        
+        c4 = c3b.split(factor=0.5, align=True)
+        c4a = c4.row(align=True).box() if x != "Visualize" else c4.row(align=True)
+        c4b = c4.row(align=True).box() if x != "Run" else c4.row(align=True)
+        
+        if x == "Recents":
+            c1a.scale_y = 1.5
+        elif x == "Design":
+            c2a.scale_y = 1.5
+        elif x == "Edges":
+            c3a.scale_y = 1.5
+        elif x == "Visualize":
+            c4a.scale_y = 1.5
         else:
-            getattr(run_panel(), "draw")(r1col2a, context)
+            c4b.scale_y = 1.5        
+        
+        c1a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+                    text="Recents", 
+                    depress= True if x == "Recents" else False, 
+                    emboss= True if x == "Recents" else False).blockmesh_panel_options = "Recents"
+        
+        c2a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+                    text="Design", 
+                    depress= True if x == "Design" else False,
+                    emboss= True if x == "Design" else False).blockmesh_panel_options = "Design"
+        
+        c3a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+                    text="Edges", 
+                    depress= True if x == "Edges" else False,
+                    emboss= True if x == "Edges" else False).blockmesh_panel_options = "Edges"
+        
+        c4a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+                    text="Visualize", 
+                    depress= True if x == "Visualize" else False,
+                    emboss= True if x == "Visualize" else False).blockmesh_panel_options = "Visualize"
 
-        getattr(geometry_designer_blocks(), "draw")(r1col2b.box(), context)
-        getattr(get_boundaries(), "draw")(r1col2c.box(), context)
+        c4b.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+                     text="Run", 
+                     depress= True if x == "Run" else False,
+                     emboss= True if x == "Run" else False).blockmesh_panel_options = "Run"
+        
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+        
+        #row1.box().operator(
+        # split = row1.split(factor=0.35, align=False)
+                    
+        # r1col1 = split.column()
+        
+        # r1col1a = r1col1.row()
+        # r1col1b = r1col1.row()
+        # r1col1c = r1col1.row()
+        
+        # r1col2 = split.column()
+        
+        # r1col2a = r1col2.row().column()
+        # r1col2b = r1col2.row().column()
+        # r1col2c = r1col2.row()
+            
+        # getattr(mesh_file_manager(), "draw")(r1col1a.box(), context)
+        # getattr(get_vertices(), "draw")(r1col1b.box(), context)
+        # getattr(boundary_control(), "draw")(r1col1c.box(), context)
+        
+        #if context.scene.geo_design_options == "Design":
+             #getattr(geometry_designer(), "draw")(row1, context)
+        # elif context.scene.geo_design_options == "Edges":
+        #     getattr(edges_panel(), "draw")(r1col2a, context)
+        # #elif context.scene.geo_design_options == "Visualization":
+        #     #getattr(visualization_panel(), "draw")(r1col2a, context)
+        # else:
+        #     getattr(run_panel(), "draw")(r1col2a, context)
+
+        # getattr(geometry_designer_blocks(), "draw")(r1col2b.box(), context)
+        # getattr(get_boundaries(), "draw")(r1col2c.box(), context)
+        
+        
         

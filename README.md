@@ -1,12 +1,12 @@
 # Venturial: A GUI for OpenFOAM
 
-Venturial is a GUI application (as a Blender addon) that alleviates the effort to construct OpenFOAM cases.
+Venturial, a Blender addon is a GUI application that alleviates the effort to construct OpenFOAM cases.
 
-1. It provides a homogenous user interface to create a geometry and graphically manipulate OpenFOAM dictionary templates.
+1. It provides a homogenous user interface to create geometries and graphically manipulate OpenFOAM dictionary templates.
 2. It uses Blender as a development platform and the blender-python (bpy) API as the primary dependency of Venturial-tools.
 3. It has an in-built tutorial and documentation tool to quickly learn its usage.
 
-Venturial seeks to promote heuristic learning of OpenFOAM for newcomers and provides convenient tools to boost the productivity of experienced OpenFOAM users. It provides an expedient workflow to solve fluid-flow problems through Venturial-tools that automate the cumbersome process of OpenFOAM case definition. They can encompass a variety of CFD problems, from the simple cavity flow case to flow around a cylinder with a slit. The basic Venturial-tools systematically introduce OpenFOAM fundamentals with minimal prerequisites. It is suggested that newcomers visit Venturial's usage tutorials. 
+Venturial seeks to promote heuristic learning of OpenFOAM for newcomers and consists convenient tools to boost the productivity of OpenFOAM users. It provides an expedient workflow to generate OpenFOAM cases through Venturial-tools that automate OpenFOAM's case definition process without diminishing user control. The basic Venturial-tools systematically introduce fundamentals of OpemFOAM with minimal prerequisites. It is suggested that newcomers visit Venturial's usage tutorials. 
 
 Venturial is inspired from [reynolds-blender](https://github.com/dmsurti/reynolds-blender), a reference implementation of [reynolds](https://github.com/dmsurti/reynolds). It is among the open-sourced software products built by the [FOSSEE](https://fossee.in/) project at [IIT Bombay](https://www.iitb.ac.in/) and managed by [CFD-FOSSEE Team](https://cfd.fossee.in/home). Venturial is presently under development and we hope to create a stable release soon. If you wish to contribute to Venturial or be a part of the development team, then reach out to us at contact-cfd@fossee.in. 
 
@@ -14,7 +14,7 @@ Venturial is inspired from [reynolds-blender](https://github.com/dmsurti/reynold
 Venturial-tools are built for specific purposes in steps following the process of solving a fluid-flow problem with OpenFOAM. Creating a successful OpenFOAM case requires these tools to work in tandem. Hence it is essential to know their features.
 
 ### 1. Meshing Features:
-- Compose cell shapes (hexahedron, wedge, prism, pyramid, tetrahedron, tetrahedral wedge) graphically to construct geometries as Blender-editable objects.
+- Compose cell shapes (hexahedron, wedge, prism, pyramid, tetrahedron, tetrahedral wedge) graphically to construct editable-geometries.
 - Query blockmesh-related data from geometries and export a blockmesh dictionary.
 - Visualize geometry with hovering mesh parameters.
 
@@ -26,8 +26,7 @@ Venturial-tools are built for specific purposes in steps following the process o
 
 ### 4. Convenience Features:
 - Changeable keyboard shortcuts for Venturial-tools.
-- Reduce the effort in correcting a mesh by implementing some of OpenFOAM's good practices before running cases. 
-- Customize user-interface layout.
+- Customizable user-interface.
 - Retain data with autosave.
 - View tool usage with descriptive dialog boxes. 
 - Run frequently used OpenFOAM commands through GUI widgets. 
@@ -96,7 +95,7 @@ A. No. Once Venturial is installed, you only need to learn Venturial's usage. It
 
 Q. How do I update the new version of Venturial?
 
-A. Updates are important. We will be rolling out new patches and features soon. To install a new version re-do steps 5 - 10. The zip file will be kept updated until beta release. Keep a single copy of the addon. If you install a new version, then remove the older version from Blender's config. To do this go to Edit >> Preferences >> Addons. In the search bar type ```Venturial```. Press the "Remove" button.
+A. Updates are important. We will be rolling out new patches and features soon. To install a new version re-do steps 5 - 10. The zip file will be kept updated until beta release or an optional auto-update feature. Keep a single copy of the addon. If you install a new version, then remove the older version from Blender's config. To do this go to Edit >> Preferences >> Addons. In the search bar type ```Venturial```. Press the "Remove" button.
 
 Q. I found a bug or a feature of Venturial is not working. What do I do?
 

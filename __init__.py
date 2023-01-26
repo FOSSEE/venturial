@@ -7,9 +7,10 @@ bl_info = {"name": "Venturial",
            "location": "View3D > Side bar > Venturial",
            "category": "Development"}
 
-
 import bpy, bmesh
 import bpy.utils.previews
+
+from bpy.utils import register_class, unregister_class
 
 from bpy.props import (IntProperty,
                        FloatProperty,
@@ -30,6 +31,7 @@ from bpy.types import (Operator,
 from gpu_extras.batch import batch_for_shader
 from bpy_extras.view3d_utils import location_3d_to_region_2d
 
+from venturial.models.blockmesh_panel_operators import *
 from venturial.models.help_menu_operators import *
 from venturial.models.developer_menu_operators import *
 from venturial.models.header_operators import *
@@ -42,8 +44,7 @@ from venturial.models.run_panel_operators import *
 from venturial.views.user_mode_view import *
 
 from venturial.views.schemas.UIList_schemas import *
-
-
+from venturial.views import user_mode_view
 
 class CUSTOM_objectCollection(PropertyGroup): 
     
@@ -112,7 +113,8 @@ class CUSTOM_objectCollection(PropertyGroup):
     blkindex: StringProperty()
 
 
-classes = (VNT_OT_user_guide,
+classes = (VNT_OT_blockmesh_panel_categories,
+           VNT_OT_user_guide,
            VNT_OT_developer_guide,
            VNT_OT_feature_request,
            VNT_OT_report_bugs,
@@ -155,6 +157,7 @@ classes = (VNT_OT_user_guide,
            VNT_OT_clearfaces,
            VNT_OT_fill_dict_file,
            VNT_OT_cleardictfileonly,
+           VNT_OT_venturial_maintools,
            SelectUnselectEdges,
            ClearAllEdges,
            edgeactions,
@@ -166,13 +169,14 @@ classes = (VNT_OT_user_guide,
            CUSTOM_UL_faces,
            CUSTOM_UL_edges,
            fileitemproperties,
+           FileMenu,
            AboutVenturial,
            AboutFossee,
            HelpMenu,
            DevMenu,
+           UICategory,
            UserModeView)
 
-from venturial.views import user_mode_view
 
 def update_snapping(self, context):
     bpy.context.scene.tool_settings.use_snap = context.scene.snapping
@@ -193,8 +197,18 @@ def update_cellxyz(self, context):
             
 def update_mode(self, context):
     
-    if self.mode == "Edit Mode":
+    if self.mode == "Vertex Mode":
         bpy.ops.object.mode_set(mode = 'EDIT')
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT', action='TOGGLE')
+        
+    elif self.mode == "Face Mode":
+        bpy.ops.object.mode_set(mode = 'EDIT')
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE', action='TOGGLE')
+        
+    elif self.mode == "Edge Mode":
+        bpy.ops.object.mode_set(mode = 'EDIT')
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE', action='TOGGLE')
+        
     else:
         bpy.ops.object.mode_set(mode = 'OBJECT')
     
@@ -214,36 +228,36 @@ def update_face_mode(self, context):
         
     else:
         bpy.ops.object.mode_set(mode = 'OBJECT')
+        
+
+def update_uicategory_mode(self, context):
+    
+    context.scene.ui_category = self.tool_type
 
 
 def register():  
     
-    from bpy.utils import register_class
-
     user_mode_view.register_venturial_logo()
     user_mode_view.register_fossee_logo()
     
     for cls in classes:
         register_class(cls)
     
-    bpy.types.Scene.category = EnumProperty(items = [('Meshing', 'Meshing', ''),
-                                                     ('Simulation', 'Simulation', ''),
-                                                     ('Post-Processing', 'Post-Processing', '')],
-                                            default = "Meshing")
+    bpy.types.Scene.ui_category = StringProperty(default="BlockMesh")
     
-    bpy.types.Scene.category_expand = BoolProperty()
+    bpy.types.Scene.tool_type = EnumProperty(items = [("BlockMesh", "BlockMesh", ""),
+                                                      ("SnappyHexMesh", "SnappyHexMesh", ""),
+                                                      ("Simulation", "Simulation", ""),
+                                                      ("Post-Processing", "Post-Processing", "")],
+                                                     default = "BlockMesh",
+                                                     update = update_uicategory_mode)
     
-    bpy.types.Scene.meshing_tool_type = EnumProperty(items = [("BlockMesh", "BlockMesh", ""),
-                                                              ("SnappyHexMesh", "SnappyHexMesh", "")],
-                                                     default = "BlockMesh")
-    
-    bpy.types.Scene.meshing_tool_type_expand = BoolProperty()
-    
-    bpy.types.Scene.geo_design_options = EnumProperty(items = [('Design', 'Design', ''),
+    bpy.types.Scene.scene_blockmesh_panel_categories = EnumProperty(items = [('Recents', 'Recents', ''),
+                                                               ('Design', 'Design', ''),
                                                                ('Edges', 'Edges', ''),
                                                                ('Visualize', 'Visualize', ''),
                                                                ('Run', 'Run', '')],
-                                                      default = 'Design')
+                                                      default = 'Recents')
     
     bpy.types.Scene.cellShapes = EnumProperty(items = [('OP1', 'Hexahedron', ''),
                                                       ('OP2', 'Wedge (Experimental)', ''),
@@ -326,8 +340,11 @@ def register():
     bpy.types.Scene.cnt = IntProperty()
     
     
-    bpy.types.Scene.mode = EnumProperty(items = [('Object Mode', 'Object Mode', ''),
-                                                 ('Edit Mode', 'Edit Mode', '')],
+    bpy.types.Scene.mode = EnumProperty(items = [('Object Mode', 'Object Mode', '', 'OBJECT_DATAMODE', 1),
+                                                 ('Vertex Mode', 'Vertex Mode', '', 'VERTEXSEL', 2),
+                                                 ('Face Mode', 'Face Mode', '', 'FACESEL', 3),
+                                                 ('Edge Mode', 'Edge Mode', '', 'EDGESEL', 4)],
+                                        
                                         default = 'Object Mode',
                                         update=update_mode)
     
@@ -372,7 +389,6 @@ def register():
     
     
 def unregister():
-    from bpy.utils import unregister_class
 
     user_mode_view.unregister_venturial_logo()
     user_mode_view.unregister_fossee_logo()
@@ -383,7 +399,7 @@ def unregister():
     del bpy.types.Scene.category 
     del bpy.types.Scene.category_expand 
     del bpy.types.Scene.meshing_tool_type 
-    del bpy.types.Scene.meshing_tool_type_expand
+    del bpy.types.Scene.non_meshing_tool_type
 
     del bpy.types.Scene.geo_design_options 
     del bpy.types.Scene.cellShapes 
