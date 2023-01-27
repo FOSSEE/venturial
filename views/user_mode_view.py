@@ -1,17 +1,10 @@
 from bpy.types import Panel, Menu
 import bpy, os, json 
 
-from venturial.models.blockmesh_panel_operators import *
 from venturial.models.help_menu_operators import *
 from venturial.models.developer_menu_operators import *
 from venturial.models.header_operators import *
-from venturial.views.geometry_designer import *
-from venturial.views.mesh_file_manager import *
-from venturial.views.get_vertices import *
-from venturial.views.get_boundaries import *
-from venturial.views.boundary_control import *
-from venturial.views.edges_panel import *
-from venturial.views.run_panel import *
+from venturial.views.blockmesh_panel.main_view import *
 
 banner = {}
 
@@ -216,70 +209,11 @@ class UserModeView(Panel):
         
     def draw(self, context):
         layout = self.layout
-        cs = context.scene
-        x = cs.scene_blockmesh_panel_categories
         
-        row1 = layout.row(align=True)
+        getattr(blockmesh_panel_layout(), "draw")(layout, context)
         
-        c1 = row1.split(factor=0.2, align=True)
-        c1a = c1.row(align=True).box() if x != "Recents" else c1.row(align=True)
-        c1b = c1.row(align=True)
         
-        c2 = c1b.split(factor=0.25, align=True)
-        c2a = c2.row(align=True).box() if x != "Design" else c2.row(align=True)
-        c2b = c2.row(align=True)
-        
-        c3 = c2b.split(factor=0.33, align=True)
-        
-        c3a = c3.row(align=True).box() if x != "Edges" else c3.row(align=True)
-        c3b = c3.row(align=True)
-        
-        c4 = c3b.split(factor=0.5, align=True)
-        c4a = c4.row(align=True).box() if x != "Visualize" else c4.row(align=True)
-        c4b = c4.row(align=True).box() if x != "Run" else c4.row(align=True)
-        
-        if x == "Recents":
-            c1a.scale_y = 1.5
-        elif x == "Design":
-            c2a.scale_y = 1.5
-        elif x == "Edges":
-            c3a.scale_y = 1.5
-        elif x == "Visualize":
-            c4a.scale_y = 1.5
-        else:
-            c4b.scale_y = 1.5        
-        
-        c1a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
-                    text="Recents", 
-                    depress= True if x == "Recents" else False, 
-                    emboss= True if x == "Recents" else False).blockmesh_panel_options = "Recents"
-        
-        c2a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
-                    text="Design", 
-                    depress= True if x == "Design" else False,
-                    emboss= True if x == "Design" else False).blockmesh_panel_options = "Design"
-        
-        c3a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
-                    text="Edges", 
-                    depress= True if x == "Edges" else False,
-                    emboss= True if x == "Edges" else False).blockmesh_panel_options = "Edges"
-        
-        c4a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
-                    text="Visualize", 
-                    depress= True if x == "Visualize" else False,
-                    emboss= True if x == "Visualize" else False).blockmesh_panel_options = "Visualize"
-
-        c4b.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
-                     text="Run", 
-                     depress= True if x == "Run" else False,
-                     emboss= True if x == "Run" else False).blockmesh_panel_options = "Run"
-        
-       
-       
-       
-       
-       
-       
+    
        
        
        

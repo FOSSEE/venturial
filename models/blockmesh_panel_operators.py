@@ -19,5 +19,5 @@ class VNT_OT_blockmesh_panel_categories(Operator):
     
     def execute(self, context):     
         context.scene.scene_blockmesh_panel_categories = self.blockmesh_panel_options
-        #print(context.scene.scene_blockmesh_panel_categories)
+        
         return {'FINISHED'}
