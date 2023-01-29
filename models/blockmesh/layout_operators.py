@@ -1,10 +1,7 @@
-from bpy.types import Operator, Menu
-import os
-import bpy
-from bpy.props import (IntProperty,
-                       EnumProperty)
+from bpy.types import Operator
+from bpy.props import EnumProperty
 
-class VNT_OT_blockmesh_panel_categories(Operator):
+class VNT_OT_blockmesh_panel_layout_options(Operator):
     """Blockmesh Panel Options"""
     bl_label = "Blockmesh Panel Options" 
     bl_idname = "vnt.blockmesh_panel_categories"

@@ -1,8 +1,6 @@
-from bpy.types import Operator, Menu
-import os
+from bpy.types import Operator
+from bpy.props import EnumProperty, IntProperty
 import bpy
-from bpy.props import (IntProperty,
-                       EnumProperty)
 
 class VNT_OT_user_general_settings(Operator):
     """User general settings"""
@@ -22,7 +20,8 @@ class VNT_OT_user_general_settings(Operator):
         
     def invoke(self, context, event):
         return context.window_manager.invoke_popup(self, width=380)
-    
+
+
 class VNT_OT_venturial_maintools(Operator):
     """Click to Open Venturial's post-processing page"""
     bl_label = "Open Venturial post-processing page" 
@@ -61,7 +60,8 @@ class VNT_OT_venturial_homepage(Operator):
 
     def execute(self, context):     
         return {'FINISHED'}
-    
+
+  
 class VNT_OT_fossee_homepage(Operator):
     """Click to visit FOSSEE's Homepage"""
     bl_label = "Open FOSSEE Homepage" 
@@ -70,6 +70,7 @@ class VNT_OT_fossee_homepage(Operator):
 
     def execute(self, context):     
         return {'FINISHED'}
+
 
 class VNT_OT_close_venturial(Operator):
     """Close Venturial"""
@@ -97,3 +98,9 @@ class VNT_OT_close_venturial(Operator):
         
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=410)
+    
+  
+
+
+    
+    

@@ -16,7 +16,7 @@ class new_mesh_file_prompt:
         row = layout.row()
         row.enabled = cs.row_en
         row.label(text="Meshing Tool")
-        row.prop(cs, "meshing_tool_type", text="")
+        row.prop(cs, "tool_type", text="")
         
         row = layout.row()
         row.enabled = cs.row_en
@@ -35,7 +35,7 @@ class new_mesh_file_prompt:
         if os.path.isdir(context.scene.mesh_dict_path):
             item = context.scene.mfile_item.add()
             item.ITEM_index = len(context.scene.mfile_item) - 1
-            item.ITEM_type = context.scene.meshing_tool_type
+            item.ITEM_type = context.scene.tool_type
             item.ITEM_name = context.scene.mesh_dict_name
             item.ITEM_location = context.scene.mesh_dict_path
             
@@ -63,7 +63,7 @@ class VNT_OT_new_mesh_file(Operator):
     
     def invoke(self, context, event):
         cs = context.scene
-        cs.mesh_dict_name = "blockMeshDict" if cs.meshing_tool_type == "BlockMesh" else "snappyHexMeshDict"
+        cs.mesh_dict_name = "blockMeshDict" if cs.tool_type == "BlockMesh" else "snappyHexMeshDict"
         return context.window_manager.invoke_props_dialog(self, width=500)
     
 
@@ -113,6 +113,68 @@ class VNT_OT_select_mesh_filepath(Operator, ExportHelper):
         self.check = True
         return {'RUNNING_MODAL'}
 
+
+class VNT_OT_build_mesh(Operator):
+    """Build mesh from blockmeshdict file"""
+    
+    bl_label = "Build Mesh" 
+    bl_idname = "vnt.build_mesh"
+    bl_description = "Build mesh from blockmeshdict file" 
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+class VNT_OT_import_mesh(Operator):
+    """Import mesh from blockmeshdict file"""
+    
+    bl_label = "Import Mesh" 
+    bl_idname = "vnt.import_mesh"
+    bl_description = "Import mesh from blockmeshdict file" 
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    
+class VNT_OT_save_mesh(Operator):
+    """Save mesh to file"""
+    
+    bl_label = "Save Mesh" 
+    bl_idname = "vnt.save_mesh"
+    bl_description = "Save mesh to file" 
+
+    def execute(self, context):
+        return {'FINISHED'}
+    
+    
+class VNT_OT_new_case(Operator):
+    """Create a new OpenFOAM case"""
+    bl_label = "Create a new OpenFOAM case"
+    bl_idname = "vnt.new_case"
+    bl_description = "Create a new OpenFoam Case" 
+
+    def execute(self, context):
+        return {'FINISHED'}
+    
+class VNT_OT_open_case(Operator):
+    """Open an OpenFOAM case"""
+    bl_label = "Open an OpenFOAM Case"
+    bl_idname = "vnt.open_case"
+    bl_description = "Open an OpenFoam Case" 
+
+    def execute(self, context):
+        return {'FINISHED'}  
+    
+
+class VNT_OT_see_older(Operator):
+    """See history of all previously worked mesh files"""
+    
+    bl_label = "See Older" 
+    bl_idname = "vnt.see_older"
+    bl_description = "See older history of previously worked mesh files" 
+
+    def execute(self, context):
+        return {'FINISHED'}
+    
 
 class VNT_OT_delete_mesh_file_items(Operator):
     """Remove all mesh file items from mesh file manager. A prompt will appear with the 
@@ -164,50 +226,4 @@ class VNT_OT_delete_mesh_file_items(Operator):
         return{'FINISHED'}
     
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, width=400)
-        
-    
-class VNT_OT_build_mesh(Operator):
-    """Build mesh from blockmeshdict file"""
-    
-    bl_label = "Build Mesh" 
-    bl_idname = "vnt.build_mesh"
-    bl_description = "Build mesh from blockmeshdict file" 
-
-    def execute(self, context):
-        return {'FINISHED'}
-    
-class VNT_OT_import_mesh(Operator):
-    """Import mesh from blockmeshdict file"""
-    
-    bl_label = "Import Mesh" 
-    bl_idname = "vnt.import_mesh"
-    bl_description = "Import mesh from blockmeshdict file" 
-
-    def execute(self, context):
-        return {'FINISHED'}
-
-    
-class VNT_OT_save_mesh(Operator):
-    """Save mesh to file"""
-    
-    bl_label = "Save Mesh" 
-    bl_idname = "vnt.save_mesh"
-    bl_description = "Save mesh to file" 
-
-    def execute(self, context):
-        return {'FINISHED'}
-    
-    
-class VNT_OT_see_older(Operator):
-    """See history of all previously worked mesh files"""
-    
-    bl_label = "See Older" 
-    bl_idname = "vnt.see_older"
-    bl_description = "See older history of previously worked mesh files" 
-
-    def execute(self, context):
-        return {'FINISHED'}
-    
-
-
+        return context.window_manager.invoke_props_dialog(self, width=400)   

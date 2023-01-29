@@ -1,13 +1,13 @@
-from venturial.models.blockmesh_panel_operators import *
+from venturial.models.blockmesh.layout_operators import *
 
 
-class blockmesh_panel_layout:
+class blockmesh_layout:
     """Class that defines the layout of the blockmesh panel"""
     
     def draw(self, layout, context):
         
         # ------------------------- Shabby code to replicate Blender's horizontal tabs. ----------------------------
-        # ------------------------- This is a fix to bounding boxes issue for operator selection. ------------------
+        # ------------------------- This is a fix to bounding boxes issue #1 for operator selection. ---------------
         # ------------------------- It's Shabby but does the job. --------------------------------------------------
         cs = context.scene
         x = cs.scene_blockmesh_panel_categories
@@ -24,7 +24,7 @@ class blockmesh_panel_layout:
         c1a = c1.row(align=True)
         c1b = c1.row(align=True)
         
-        c1a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+        c1a.operator(VNT_OT_blockmesh_panel_layout_options.bl_idname, 
                     text="Recents", 
                     depress= True if x == "Recents" else False, 
                     emboss= True if x == "Recents" else False).blockmesh_panel_options = "Recents"
@@ -32,7 +32,7 @@ class blockmesh_panel_layout:
     
         c2 = c1b.split(factor=0.25 if x == "Design" else 0.25, align=True)
         c2a = c2.row(align=True)
-        c2a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+        c2a.operator(VNT_OT_blockmesh_panel_layout_options.bl_idname, 
                     text="Design", 
                     depress= True if x == "Design" else False,
                     emboss= True if x == "Design" else False).blockmesh_panel_options = "Design"
@@ -42,7 +42,7 @@ class blockmesh_panel_layout:
         c3 = c2b.split(factor=0.33 if x == "Edges" else 0.33, align=True)
         
         c3a = c3.row(align=True)
-        c3a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+        c3a.operator(VNT_OT_blockmesh_panel_layout_options.bl_idname, 
                     text="Edges", 
                     depress= True if x == "Edges" else False,
                     emboss= True if x == "Edges" else False).blockmesh_panel_options = "Edges"
@@ -52,14 +52,14 @@ class blockmesh_panel_layout:
         
         c4 = c3b.split(factor=0.505 if x == "Visualize" else 0.5, align=True)
         c4a = c4.row(align=True)
-        c4a.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+        c4a.operator(VNT_OT_blockmesh_panel_layout_options.bl_idname, 
                     text="Visualize", 
                     depress= True if x == "Visualize" else False,
                     emboss= True if x == "Visualize" else False).blockmesh_panel_options = "Visualize"
         c4a.scale_y = scale_active if x == "Visualize" else scale_inactive
         
         c4b = c4.row(align=True)
-        c4b.operator(VNT_OT_blockmesh_panel_categories.bl_idname, 
+        c4b.operator(VNT_OT_blockmesh_panel_layout_options.bl_idname, 
                      text="Run", 
                      depress= True if x == "Run" else False,
                      emboss= True if x == "Run" else False).blockmesh_panel_options = "Run"

@@ -31,20 +31,23 @@ from bpy.types import (Operator,
 from gpu_extras.batch import batch_for_shader
 from bpy_extras.view3d_utils import location_3d_to_region_2d
 
-from venturial.models.blockmesh_panel_operators import *
-from venturial.models.help_menu_operators import *
-from venturial.models.developer_menu_operators import *
-from venturial.models.header_operators import *
-from venturial.models.geometry_designer_operators import *
-from venturial.models.mesh_file_manager_operators import *
-from venturial.models.get_vertices_operators import *
-from venturial.models.boundary_control_operators import *
-from venturial.models.run_panel_operators import *
+from venturial.models.header.file_handling_operators import *
+from venturial.models.header.developer_menu_operators import *
+from venturial.models.header.general_operators import *
+from venturial.models.header.help_menu_operators import *
 
-from venturial.views.user_mode_view import *
+from venturial.models.blockmesh.layout_operators import *
+# from venturial.models.geometry_designer_operators import *
+# from venturial.models.mesh_file_manager_operators import *
+# from venturial.models.get_vertices_operators import *
+# from venturial.models.boundary_control_operators import *
+# from venturial.models.run_panel_operators import *
 
+from venturial.views.user_mode_view import VNT_PT_usermodeview
+from venturial.views.header.view import *
 from venturial.views.schemas.UIList_schemas import *
-from venturial.views import user_mode_view
+
+from venturial.utils.custom_icon_object_generator import register_custom_icon, unregister_custom_icon
 
 class CUSTOM_objectCollection(PropertyGroup): 
     
@@ -113,7 +116,23 @@ class CUSTOM_objectCollection(PropertyGroup):
     blkindex: StringProperty()
 
 
-classes = (VNT_OT_blockmesh_panel_categories,
+
+classes = (VNT_OT_new_mesh_file,
+           VNT_OT_select_mesh_filepath, 
+           VNT_OT_build_mesh,
+           VNT_OT_import_mesh, 
+           VNT_OT_save_mesh,
+           VNT_OT_new_case,
+           VNT_OT_open_case,
+           VNT_OT_see_older,
+           VNT_OT_delete_mesh_file_items,
+           VNT_OT_dev_mode,
+           VNT_OT_dev_tools,
+           VNT_OT_user_general_settings,
+           VNT_OT_venturial_maintools,
+           VNT_OT_venturial_homepage,
+           VNT_OT_fossee_homepage,
+           VNT_OT_close_venturial,
            VNT_OT_user_guide,
            VNT_OT_developer_guide,
            VNT_OT_feature_request,
@@ -122,59 +141,81 @@ classes = (VNT_OT_blockmesh_panel_categories,
            VNT_OT_user_community,
            VNT_OT_developer_community,
            VNT_OT_release_notes,
-           VNT_OT_dev_mode,
-           VNT_OT_dev_tools,
-           VNT_OT_user_general_settings,
-           VNT_OT_venturial_homepage,
-           VNT_OT_fossee_homepage,
-           VNT_OT_close_venturial,
-           VNT_OT_add_to_viewport,
-           VNT_OT_new_mesh_file,
-           VNT_OT_select_mesh_filepath,
-           VNT_OT_delete_mesh_file_items,
-           VNT_OT_build_mesh,
-           VNT_OT_import_mesh,
-           VNT_OT_save_mesh,
-           VNT_OT_see_older,
-           VNT_OT_add_update_verts,
-           VNT_OT_vertactions,
-           VNT_OT_select_unselect_allverts,
-           VNT_OT_clearverts,
-           VNT_OT_compose,
-           VNT_OT_get_blocks,
-           VNT_OT_blocksdatacontrol,
-           VNT_OT_showselectedblocks,
-           VNT_OT_select_unselect_allblocks,
-           VNT_OT_remove_blocks,
-           VNT_OT_remove_all_blocks,
-           VNT_OT_clearblocks,
-           SP_UL_mesh_file_manager, 
-           SP_UL_mesh_file_coroner,
-           VNT_OT_faceactions,
-           VNT_OT_set_face_name,
-           VNT_OT_set_type_face,
-           VNT_OT_selectfaces,
-           VNT_OT_clearfaces,
-           VNT_OT_fill_dict_file,
-           VNT_OT_cleardictfileonly,
-           VNT_OT_venturial_maintools,
-        #    ClearAllEdges,
-        #    edgeactions,
-        #    show_curvededge,
-        #    clear_currentedge,
-           CUSTOM_objectCollection,
-           CUSTOM_UL_verts,
-           CUSTOM_UL_blocks,
-           CUSTOM_UL_faces,
-           CUSTOM_UL_edges,
+           VNT_PT_usermodeview,
+           VNT_OT_blockmesh_panel_layout_options,
            fileitemproperties,
-           FileMenu,
-           AboutVenturial,
-           AboutFossee,
-           HelpMenu,
-           DevMenu,
-           UICategory,
-           UserModeView)
+           VNT_MT_dev_menu,
+           VNT_MT_file_menu,
+           VNT_PT_uicategory,
+           VNT_MT_about_venturial,
+           VNT_MT_about_fossee,
+           VNT_MT_help_menu,
+           CUSTOM_objectCollection)
+
+
+
+
+# classes = (VNT_OT_user_guide,
+#            VNT_OT_developer_guide,
+#            VNT_OT_feature_request,
+#            VNT_OT_report_bugs,
+#            VNT_OT_developer_support,
+#            VNT_OT_user_community,
+#            VNT_OT_developer_community,
+#            VNT_OT_release_notes,
+#            VNT_OT_dev_mode,
+#            VNT_OT_dev_tools,
+#            VNT_OT_user_general_settings,
+#            VNT_OT_venturial_homepage,
+#            VNT_OT_fossee_homepage,
+#            VNT_OT_close_venturial,
+#            VNT_OT_add_to_viewport,
+#            VNT_OT_new_mesh_file,
+#            VNT_OT_select_mesh_filepath,
+#            VNT_OT_delete_mesh_file_items,
+#            VNT_OT_build_mesh,
+#            VNT_OT_import_mesh,
+#            VNT_OT_save_mesh,
+#            VNT_OT_see_older,
+#            VNT_OT_add_update_verts,
+#            VNT_OT_vertactions,
+#            VNT_OT_select_unselect_allverts,
+#            VNT_OT_clearverts,
+#            VNT_OT_compose,
+#            VNT_OT_get_blocks,
+#            VNT_OT_blocksdatacontrol,
+#            VNT_OT_showselectedblocks,
+#            VNT_OT_select_unselect_allblocks,
+#            VNT_OT_remove_blocks,
+#            VNT_OT_remove_all_blocks,
+#            VNT_OT_clearblocks,
+#            SP_UL_mesh_file_manager, 
+#            SP_UL_mesh_file_coroner,
+#            VNT_OT_faceactions,
+#            VNT_OT_set_face_name,
+#            VNT_OT_set_type_face,
+#            VNT_OT_selectfaces,
+#            VNT_OT_clearfaces,
+#            VNT_OT_fill_dict_file,
+#            VNT_OT_cleardictfileonly,
+#            VNT_OT_venturial_maintools,
+#         #    ClearAllEdges,
+#         #    edgeactions,
+#         #    show_curvededge,
+#         #    clear_currentedge,
+#            CUSTOM_objectCollection,
+#            CUSTOM_UL_verts,
+#            CUSTOM_UL_blocks,
+#            CUSTOM_UL_faces,
+#            CUSTOM_UL_edges,
+#            fileitemproperties,
+#            FileMenu,
+#            AboutVenturial,
+#            AboutFossee,
+#            HelpMenu,
+#            DevMenu,
+#            UICategory,
+#            UserModeView)
 
 
 def update_snapping(self, context):
@@ -236,8 +277,8 @@ def update_uicategory_mode(self, context):
 
 def register():  
     
-    user_mode_view.register_venturial_logo()
-    user_mode_view.register_fossee_logo()
+    register_custom_icon("venturial_logo", "/venturial/icons/custom_icons/venturial_logo.png")
+    register_custom_icon("fossee_logo", "/venturial/icons/custom_icons/fossee_logo.png")
     
     for cls in classes:
         register_class(cls)
@@ -389,8 +430,8 @@ def register():
     
 def unregister():
 
-    user_mode_view.unregister_venturial_logo()
-    user_mode_view.unregister_fossee_logo()
+    #user_mode_view.unregister_venturial_logo()
+    #user_mode_view.unregister_fossee_logo()
         
     for cls in reversed(classes):
         unregister_class(cls)

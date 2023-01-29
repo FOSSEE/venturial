@@ -1,5 +1,4 @@
 from bpy.types import Operator
-from bpy.props import BoolProperty
 
 class VNT_OT_dev_mode(Operator):
     """Click to Enable/Disable Developer Mode"""
