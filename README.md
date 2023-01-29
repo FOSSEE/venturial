@@ -67,7 +67,7 @@ Venturial installs like most other Blender-addons. Read more on [Blender addons]
 
 3. Extract the compressed ```blender-3.2.1-linux-x64.tar.xz``` folder.
 4. Enter the extracted folder and open a terminal there. Type ```./blender``` in the terminal. This will open Blender through the terminal.
-5. Download venturial's zip folder from its github repository or by clicking on his link >> [Download Zip](https://github.com/FOSSEE/venturial/blob/main/venturial.zip). 
+5. Download venturial's zip folder from its github repository or by clicking on his link >> [Download Zip](https://github.com/FOSSEE/venturial/blob/master/venturial.zip). 
 6. Make sure that the main folder inside the zip file is named ```venturial```. This allows ease of handling the addon.
 7. Within Blender, at the top bar, go to Edit >> Preferences. The Blender preferences window will open. Click the Addons section from the vertical menu.
 8. Click the install button. A file browser should open. Locate venturial's zip folder and click on the Install Add-on button.
