@@ -22,8 +22,6 @@ class VNT_MT_dev_menu(Menu):
         layout.operator(VNT_OT_dev_tools.bl_idname, text = "Developer Settings", icon="OPTIONS")
         layout.operator(VNT_OT_dev_mode.bl_idname, text= "Developer Mode", icon="LOCKED")
 
-
-
 class VNT_MT_file_menu(Menu):
     """File Menu options"""
     bl_label = "File" 
@@ -33,8 +31,8 @@ class VNT_MT_file_menu(Menu):
     def draw(self, context):
         layout = self.layout
     
-        layout.operator(VNT_OT_new_mesh_file.bl_idname, text="New Mesh", icon="FILE_NEW")
-        layout.operator(VNT_OT_build_mesh.bl_idname, text="Build Mesh", icon="SHADERFX")
+        layout.operator(VNT_OT_new_mesh_file.bl_idname, text="New Mesh", icon_value=custom_icons["new_mesh_file_2"]["new_mesh_file_2"].icon_id)
+        layout.operator(VNT_OT_build_mesh.bl_idname, text="Build Mesh", icon_value=custom_icons["build_mesh_2"]["build_mesh_2"].icon_id)
         layout.operator(VNT_OT_import_mesh.bl_idname, text = "Import Mesh", icon="IMPORT")
         layout.operator(VNT_OT_save_mesh.bl_idname, text = "Save Mesh", icon="PASTEDOWN")
         layout.separator()
@@ -44,10 +42,9 @@ class VNT_MT_file_menu(Menu):
         layout.operator(VNT_OT_user_general_settings.bl_idname, text = "Settings", icon="PREFERENCES")
         layout.menu(VNT_MT_dev_menu.bl_idname, text="Development", icon="RNA_ADD")
 
-
-        
+      
 class VNT_PT_uicategory(Panel):
-    """A pop-up UI panel for selecting and option from Venturial-tool(Meshing, Solving and Post-processing)"""
+    """A pop-up UI panel for selecting and option from Venturial-tools (Meshing, Solving and Post-processing)"""
     bl_idname = "VNT_PT_uicategory"
     bl_label = ""
     bl_space_type =  "VIEW_3D"   

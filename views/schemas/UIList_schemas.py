@@ -1,7 +1,7 @@
 from bpy.types import (UIList, PropertyGroup)
 from bpy.props import StringProperty, BoolProperty, IntProperty
 
-class SP_UL_mesh_file_manager(UIList):
+class VNT_UL_mesh_file_manager(UIList):
     """Callable class for mesh file manager"""
     
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
@@ -15,7 +15,7 @@ class SP_UL_mesh_file_manager(UIList):
         row.prop(item, "ITEM_location", text="", emboss=True)
         #row.prop(cs.mfile_item_ptr, "ITEM_history")
 
-class SP_UL_mesh_file_coroner(UIList):
+class VNT_UL_mesh_file_coroner(UIList):
     """Callable class for mesh file coroner"""
     
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):

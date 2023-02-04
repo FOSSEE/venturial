@@ -1,10 +1,11 @@
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import IntProperty, BoolProperty, StringProperty
+from bpy.props import IntProperty, BoolProperty, StringProperty, EnumProperty
 import bpy, os
 from pathlib import Path
 from venturial.utils.mesh_dictionary_controller import mesh_dictionary_controller
-from venturial.views.schemas.UIList_schemas import SP_UL_mesh_file_manager
+from venturial.utils.custom_icon_object_generator import *
+#from venturial.views.schemas.UIList_schemas import VNT_UL_mesh_file_manager, VNT_UL_mesh_file_coroner
 
 class new_mesh_file_prompt:
     """Prompt for creating new mesh file"""
@@ -12,11 +13,15 @@ class new_mesh_file_prompt:
     def draw(self, layout, context):
         """Method to draw the new mesh file prompt layout"""
         cs = context.scene
+        row0 = layout.row()
+        row0.label(text="")
+        row0.scale_y = 0.1
+        row0.ui_units_y = 0.05
         
         row = layout.row()
         row.enabled = cs.row_en
         row.label(text="Meshing Tool")
-        row.prop(cs, "tool_type", text="")
+        row.prop(cs, "prompt_meshing_tool", text="")
         
         row = layout.row()
         row.enabled = cs.row_en
@@ -28,9 +33,16 @@ class new_mesh_file_prompt:
         row.operator(VNT_OT_select_mesh_filepath.bl_idname, text="Select mesh file path")
         row.prop(cs, "mesh_dict_path", text="")        
         
+        row = layout.row()
+        row.alignment = 'CENTER'
+        row.label(text="Clicking OK will remove all objects from scene", icon="ERROR")
+        
     def execute(self, optr, context):
         """method to create a new mesh file item into mesh file manager. This will also generate
         an empty mesh dictionary at the chosen file location."""
+        for obj in context.scene.objects:
+            obj.select_set(True)
+        bpy.ops.object.delete()
         
         if os.path.isdir(context.scene.mesh_dict_path):
             item = context.scene.mfile_item.add()
@@ -44,6 +56,8 @@ class new_mesh_file_prompt:
             
         else:
             optr.report({'INFO'}, 'Select a directory.')
+            
+        return {'FINISHED'}
 
 class VNT_OT_new_mesh_file(Operator):
     """Create a new mesh file"""
@@ -59,10 +73,11 @@ class VNT_OT_new_mesh_file(Operator):
     def execute(self, context):
         
         getattr(new_mesh_file_prompt(), "execute")(self, context)
-        return {'FINISHED'}
     
     def invoke(self, context, event):
         cs = context.scene
+        cs.row_en = True
+        cs.prompt_meshing_tool = cs.tool_type
         cs.mesh_dict_name = "blockMeshDict" if cs.tool_type == "BlockMesh" else "snappyHexMeshDict"
         return context.window_manager.invoke_props_dialog(self, width=500)
     
@@ -70,7 +85,7 @@ class VNT_OT_new_mesh_file(Operator):
 class VNT_OT_select_mesh_filepath(Operator, ExportHelper):
     """Opens a file browser to set the location path of mesh file.
     This operator is drawn after pressing the New Mesh button.
-    Accessible only after VNT_OT_new_mesh_file is executed."""
+    Accessible graphically only after VNT_OT_new_mesh_file is executed."""
     
     bl_label = "New Mesh"
     bl_description = "Opens a file browser to set the location path of mesh file"
@@ -111,6 +126,7 @@ class VNT_OT_select_mesh_filepath(Operator, ExportHelper):
         context.scene.row_en = False
         context.window_manager.fileselect_add(self)
         self.check = True
+        #context.scene.row_en = True
         return {'RUNNING_MODAL'}
 
 
@@ -198,7 +214,7 @@ class VNT_OT_delete_mesh_file_items(Operator):
         cs = context.scene
         row = layout.row()
         row.scale_y = 1.4
-        row.template_list("SP_UL_mesh_file_coroner", "", cs, "mfile_item", cs, "mfile_item_index", rows= 2)
+        row.template_list("VNT_UL_mesh_file_coroner", "", cs, "mfile_item", cs, "mfile_item_index", rows= 2)
 
     def execute(self, context):
         cs = context.scene

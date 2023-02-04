@@ -74,11 +74,11 @@ class geometry_designer:
         
         row7bspt = row7b.split(factor = 0.15)
         
-        row7ba = row7bspt.split()
-        row7bb = row7bspt.column(align=True).split(align=True)
-        
+        row7ba = row7bspt.row()
         row7ba.operator(VNT_OT_blocksdatacontrol.bl_idname, icon="ADD", text="").action = 'ADD'
-
+        
+        row7bb = row7bspt.row()
+        
         row7bb.operator(VNT_OT_blocksdatacontrol.bl_idname, icon="REMOVE", text="").action = 'REMOVE'
         row7bb.operator(VNT_OT_showselectedblocks.bl_idname, icon="STICKY_UVS_DISABLE", text="")
         row7bb.operator(VNT_OT_select_unselect_allblocks.bl_idname, icon="STICKY_UVS_LOC", text="")

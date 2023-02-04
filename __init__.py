@@ -37,6 +37,7 @@ from venturial.models.header.general_operators import *
 from venturial.models.header.help_menu_operators import *
 
 from venturial.models.blockmesh.layout_operators import *
+from venturial.models.blockmesh.design_operators import *
 # from venturial.models.geometry_designer_operators import *
 # from venturial.models.mesh_file_manager_operators import *
 # from venturial.models.get_vertices_operators import *
@@ -150,73 +151,23 @@ classes = (VNT_OT_new_mesh_file,
            VNT_MT_about_venturial,
            VNT_MT_about_fossee,
            VNT_MT_help_menu,
-           CUSTOM_objectCollection)
+           CUSTOM_objectCollection,
+           VNT_UL_mesh_file_manager,
+           VNT_UL_mesh_file_coroner,
+           VNT_OT_add_to_viewport,
+           VNT_OT_compose,
+           VNT_OT_get_blocks,
+           VNT_OT_remove_blocks,
+           VNT_OT_remove_all_blocks,
+           VNT_OT_clearblocks,
+           VNT_OT_blocksdatacontrol,
+           VNT_OT_showselectedblocks,
+           VNT_OT_select_unselect_allblocks)
 
 
-
-
-# classes = (VNT_OT_user_guide,
-#            VNT_OT_developer_guide,
-#            VNT_OT_feature_request,
-#            VNT_OT_report_bugs,
-#            VNT_OT_developer_support,
-#            VNT_OT_user_community,
-#            VNT_OT_developer_community,
-#            VNT_OT_release_notes,
-#            VNT_OT_dev_mode,
-#            VNT_OT_dev_tools,
-#            VNT_OT_user_general_settings,
-#            VNT_OT_venturial_homepage,
-#            VNT_OT_fossee_homepage,
-#            VNT_OT_close_venturial,
-#            VNT_OT_add_to_viewport,
-#            VNT_OT_new_mesh_file,
-#            VNT_OT_select_mesh_filepath,
-#            VNT_OT_delete_mesh_file_items,
-#            VNT_OT_build_mesh,
-#            VNT_OT_import_mesh,
-#            VNT_OT_save_mesh,
-#            VNT_OT_see_older,
-#            VNT_OT_add_update_verts,
-#            VNT_OT_vertactions,
-#            VNT_OT_select_unselect_allverts,
-#            VNT_OT_clearverts,
-#            VNT_OT_compose,
-#            VNT_OT_get_blocks,
-#            VNT_OT_blocksdatacontrol,
-#            VNT_OT_showselectedblocks,
-#            VNT_OT_select_unselect_allblocks,
-#            VNT_OT_remove_blocks,
-#            VNT_OT_remove_all_blocks,
-#            VNT_OT_clearblocks,
-#            SP_UL_mesh_file_manager, 
-#            SP_UL_mesh_file_coroner,
-#            VNT_OT_faceactions,
-#            VNT_OT_set_face_name,
-#            VNT_OT_set_type_face,
-#            VNT_OT_selectfaces,
-#            VNT_OT_clearfaces,
-#            VNT_OT_fill_dict_file,
-#            VNT_OT_cleardictfileonly,
-#            VNT_OT_venturial_maintools,
-#         #    ClearAllEdges,
-#         #    edgeactions,
-#         #    show_curvededge,
-#         #    clear_currentedge,
-#            CUSTOM_objectCollection,
-#            CUSTOM_UL_verts,
-#            CUSTOM_UL_blocks,
-#            CUSTOM_UL_faces,
-#            CUSTOM_UL_edges,
-#            fileitemproperties,
-#            FileMenu,
-#            AboutVenturial,
-#            AboutFossee,
-#            HelpMenu,
-#            DevMenu,
-#            UICategory,
-#            UserModeView)
-
+def update_prompt_meshing_tool(self, context):
+        context.scene.tool_type = self.prompt_meshing_tool
+        context.scene.mesh_dict_name = 'blockMeshDict' if self.prompt_meshing_tool == 'BlockMesh' else 'snappyHexMeshDict'
 
 def update_snapping(self, context):
     bpy.context.scene.tool_settings.use_snap = context.scene.snapping
@@ -236,21 +187,8 @@ def update_cellxyz(self, context):
             scn.bcustom[i].setcellz = self.cell_z
             
 def update_mode(self, context):
-    
-    if self.mode == "Vertex Mode":
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT', action='TOGGLE')
-        
-    elif self.mode == "Face Mode":
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE', action='TOGGLE')
-        
-    elif self.mode == "Edge Mode":
-        bpy.ops.object.mode_set(mode = 'EDIT')
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE', action='TOGGLE')
-        
-    else:
-        bpy.ops.object.mode_set(mode = 'OBJECT')
+    bpy.ops.object.mode_set(mode = 'EDIT' if self.mode != 'OBJECT' else self.mode)
+    if self.mode != 'OBJECT': bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type=self.mode, action='TOGGLE')
     
     
 def update_face_mode(self, context):
@@ -273,12 +211,18 @@ def update_face_mode(self, context):
 def update_uicategory_mode(self, context):
     
     context.scene.ui_category = self.tool_type
+    
+
+def test_enum_update(self, context):
+    print(self.test_enum)
 
 
 def register():  
     
     register_custom_icon("venturial_logo", "/venturial/icons/custom_icons/venturial_logo.png")
     register_custom_icon("fossee_logo", "/venturial/icons/custom_icons/fossee_logo.png")
+    register_custom_icon("new_mesh_file_2", "/venturial/icons/custom_icons/new_mesh_file_2.png")
+    register_custom_icon("build_mesh_2", "/venturial/icons/custom_icons/build_mesh_2.png")
     
     for cls in classes:
         register_class(cls)
@@ -292,12 +236,28 @@ def register():
                                                      default = "BlockMesh",
                                                      update = update_uicategory_mode)
     
+    
+    bpy.types.Scene.prompt_meshing_tool = EnumProperty(default = 'BlockMesh',
+                                                       items = [('BlockMesh', 'BlockMesh', ''),
+                                                                ('SnappyHexMesh', 'SnappyHexMesh', '')],
+                                                       update = update_prompt_meshing_tool)
+
+    
     bpy.types.Scene.scene_blockmesh_panel_categories = EnumProperty(items = [('Recents', 'Recents', ''),
-                                                               ('Design', 'Design', ''),
-                                                               ('Edges', 'Edges', ''),
-                                                               ('Visualize', 'Visualize', ''),
-                                                               ('Run', 'Run', '')],
-                                                      default = 'Recents')
+                                                                             ('Design', 'Design', ''),
+                                                                             ('Edges', 'Edges', ''),
+                                                                             ('Visualize', 'Visualize', ''),
+                                                                             ('Run', 'Run', '')],
+                                                                    default = 'Recents')
+    
+    bpy.types.Scene.test_enum = EnumProperty(items = [('Recents', 'Recents', ''),
+                                                      ('Design', 'Design', ''),
+                                                      ('Edges', 'Edges', ''),
+                                                      ('Visualize', 'Visualize', ''),
+                                                      ('Run', 'Run', '')],
+                                                      default = {'Recents'},
+                                                      options = {'ENUM_FLAG'},
+                                                      update=test_enum_update)
     
     bpy.types.Scene.cellShapes = EnumProperty(items = [('OP1', 'Hexahedron', ''),
                                                       ('OP2', 'Wedge (Experimental)', ''),
@@ -351,9 +311,9 @@ def register():
     bpy.types.Scene.transform = BoolProperty(default=False)
     
     bpy.types.Scene.transformation_methods = EnumProperty(items = [('Move', 'Move (G)', 'Shortcut: G'),
-                                                                  ('Rotate', 'Rotate (R)', 'Shortcut: R'),
-                                                                  ('Scale', 'Scale (S)', 'Shortcut: S')],
-                                                        default = 'Move')
+                                                                   ('Rotate', 'Rotate (R)', 'Shortcut: R'),
+                                                                   ('Scale', 'Scale (S)', 'Shortcut: S')],
+                                                          default = 'Move')
     
     bpy.types.Scene.snapping = BoolProperty(default=False, update=update_snapping)
     
@@ -380,12 +340,11 @@ def register():
     bpy.types.Scene.cnt = IntProperty()
     
     
-    bpy.types.Scene.mode = EnumProperty(items = [('Object Mode', 'Object Mode', '', 'OBJECT_DATAMODE', 1),
-                                                 ('Vertex Mode', 'Vertex Mode', '', 'VERTEXSEL', 2),
-                                                 ('Face Mode', 'Face Mode', '', 'FACESEL', 3),
-                                                 ('Edge Mode', 'Edge Mode', '', 'EDGESEL', 4)],
-                                        
-                                        default = 'Object Mode',
+    bpy.types.Scene.mode = EnumProperty(items = [('OBJECT', 'Object Mode', '', 'OBJECT_DATAMODE', 1),
+                                                 ('VERT', 'Vertex Mode', '', 'VERTEXSEL', 2),
+                                                 ('FACE', 'Face Mode', '', 'FACESEL', 3),
+                                                 ('EDGE', 'Edge Mode', '', 'EDGESEL', 4)],
+                                        default = 'OBJECT',
                                         update=update_mode)
     
     bpy.types.Scene.bdclist = EnumProperty(name= "",
