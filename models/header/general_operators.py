@@ -87,7 +87,7 @@ class VNT_OT_close_venturial(Operator):
         row.label(text="       Click OK to confirm Exit.")
         row = layout.row()
         row.alignment = "CENTER"
-        row.label(text="       To re-enable OpenFOAM-GUI:")
+        row.label(text="       To re-enable Venturial:")
         row = layout.row()
         row.alignment = "CENTER"
         row.label(text="Go to Edit-> Preferences->Add-ons -> Search 'Venturial' -> Tick Checkbox.")

@@ -388,72 +388,130 @@ def register():
     
     
 def unregister():
-
-    #user_mode_view.unregister_venturial_logo()
-    #user_mode_view.unregister_fossee_logo()
-        
+    
     for cls in reversed(classes):
         unregister_class(cls)
     
-    del bpy.types.Scene.category 
-    del bpy.types.Scene.category_expand 
-    del bpy.types.Scene.meshing_tool_type 
-    del bpy.types.Scene.non_meshing_tool_type
+    unregister_custom_icon("venturial_logo", "/venturial/icons/custom_icons/venturial_logo.png")
+    unregister_custom_icon("fossee_logo", "/venturial/icons/custom_icons/fossee_logo.png")
+    unregister_custom_icon("new_mesh_file_2", "/venturial/icons/custom_icons/new_mesh_file_2.png")
+    unregister_custom_icon("build_mesh_2", "/venturial/icons/custom_icons/build_mesh_2.png")
+    
 
-    del bpy.types.Scene.geo_design_options 
+    del bpy.types.Scene.ui_category  
+    del bpy.types.Scene.tool_type   
+    del bpy.types.Scene.prompt_meshing_tool 
+    del bpy.types.Scene.scene_blockmesh_panel_categories
+    del bpy.types.Scene.test_enum
     del bpy.types.Scene.cellShapes 
     del bpy.types.Scene.cellShape_units 
-                                         
     del bpy.types.Scene.mfile_item_ptr 
     del bpy.types.Scene.mfile_item 
-    del bpy.types.Scene.mfile_item_index 
-    
-    del bpy.types.Scene.mesh_dict_name 
-    del bpy.types.Scene.mesh_dict_path 
-    del bpy.types.Scene.row_en
-    
-    del bpy.types.Scene.cell_x                        
-    del bpy.types.Scene.cell_y 
-    del bpy.types.Scene.cell_z                        
+    del bpy.types.Scene.mfile_item_index    
+    del bpy.types.Scene.mesh_dict_name
+    del bpy.types.Scene.mesh_dict_path
+    del bpy.types.Scene.row_en 
+    del bpy.types.Scene.cell_x
+    del bpy.types.Scene.cell_y
+    del bpy.types.Scene.cell_z
     del bpy.types.Scene.ctm
-                       
     del bpy.types.Scene.transform     
     del bpy.types.Scene.transformation_methods
-                                          
-    del bpy.types.Scene.snapping    
+    del bpy.types.Scene.snapping 
     del bpy.types.Scene.snapping_methods 
-                                                                                 
     del bpy.types.Scene.simblk 
     del bpy.types.Scene.simblk_index 
-    
     del bpy.types.Scene.bcustom 
     del bpy.types.Scene.bcustom_index 
-    
-    del bpy.types.Scene.mode
-    
-    del bpy.types.Scene.vcustom
+    del bpy.types.Scene.vcustom 
     del bpy.types.Scene.vcustom_index
-    
-    del bpy.types.Scene.fcustom
-    del bpy.types.Scene.fcustom_index
-    
-    del bpy.types.Scene.bdclist
+    del bpy.types.Scene.fcustom 
+    del bpy.types.Scene.fcustom_index 
+    del bpy.types.Scene.cnt
+    del bpy.types.Scene.mode
+    del bpy.types.Scene.bdclist         
     del bpy.types.Scene.face_name
     del bpy.types.Scene.facedes
-    
-    del bpy.types.Scene.acustom 
+    del bpy.types.Scene.acustom
     del bpy.types.Scene.acustom_index 
-     
     del bpy.types.Scene.pcustom 
     del bpy.types.Scene.pcustom_index 
-     
     del bpy.types.Scene.scustom 
     del bpy.types.Scene.scustom_index 
-     
     del bpy.types.Scene.bscustom 
     del bpy.types.Scene.bscustom_index 
-    
-    del bpy.types.Scene.ipcnt
+    del bpy.types.Scene.ipcnt 
     del bpy.types.Scene.edgelist
-    
     del bpy.types.Scene.face_sel_mode
+    
+    
+    
+    
+    
+    
+    
+    
+        
+    
+    # del bpy.types.Scene.category 
+    # del bpy.types.Scene.category_expand 
+    # del bpy.types.Scene.meshing_tool_type 
+    # del bpy.types.Scene.non_meshing_tool_type
+
+    # del bpy.types.Scene.geo_design_options 
+    # del bpy.types.Scene.cellShapes 
+    # del bpy.types.Scene.cellShape_units 
+                                         
+    # del bpy.types.Scene.mfile_item_ptr 
+    # del bpy.types.Scene.mfile_item 
+    # del bpy.types.Scene.mfile_item_index 
+    
+    # del bpy.types.Scene.mesh_dict_name 
+    # del bpy.types.Scene.mesh_dict_path 
+    # del bpy.types.Scene.row_en
+    
+    # del bpy.types.Scene.cell_x                        
+    # del bpy.types.Scene.cell_y 
+    # del bpy.types.Scene.cell_z                        
+    # del bpy.types.Scene.ctm
+                       
+    # del bpy.types.Scene.transform     
+    # del bpy.types.Scene.transformation_methods
+                                          
+    # del bpy.types.Scene.snapping    
+    # del bpy.types.Scene.snapping_methods 
+                                                                                 
+    # del bpy.types.Scene.simblk 
+    # del bpy.types.Scene.simblk_index 
+    
+    # del bpy.types.Scene.bcustom 
+    # del bpy.types.Scene.bcustom_index 
+    
+    # del bpy.types.Scene.mode
+    
+    # del bpy.types.Scene.vcustom
+    # del bpy.types.Scene.vcustom_index
+    
+    # del bpy.types.Scene.fcustom
+    # del bpy.types.Scene.fcustom_index
+    
+    # del bpy.types.Scene.bdclist
+    # del bpy.types.Scene.face_name
+    # del bpy.types.Scene.facedes
+    
+    # del bpy.types.Scene.acustom 
+    # del bpy.types.Scene.acustom_index 
+     
+    # del bpy.types.Scene.pcustom 
+    # del bpy.types.Scene.pcustom_index 
+     
+    # del bpy.types.Scene.scustom 
+    # del bpy.types.Scene.scustom_index 
+     
+    # del bpy.types.Scene.bscustom 
+    # del bpy.types.Scene.bscustom_index 
+    
+    # del bpy.types.Scene.ipcnt
+    # del bpy.types.Scene.edgelist
+    
+    # del bpy.types.Scene.face_sel_mode
