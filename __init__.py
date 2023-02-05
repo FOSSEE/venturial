@@ -259,13 +259,13 @@ def register():
                                                       options = {'ENUM_FLAG'},
                                                       update=test_enum_update)
     
-    bpy.types.Scene.cellShapes = EnumProperty(items = [('OP1', 'Hexahedron', ''),
-                                                      ('OP2', 'Wedge (Experimental)', ''),
-                                                      ('OP3', 'Prism', ''),
-                                                      ('OP4', 'Pyramid (Experimental)', ''),
-                                                      ('OP5', 'Tetrahedron (Experimental)', ''),
-                                                      ('OP6', 'Tetrahedral wedge (Experimental)', '')],
-                                              default = 'OP1',
+    bpy.types.Scene.cellShapes = EnumProperty(items = [('summon_hexahedrons', 'Hexahedron', ''),
+                                                       ('summon_wedges', 'Wedge (Experimental)', ''),
+                                                       ('summon_prisms', 'Prism', ''),
+                                                       ('summon_pyramid', 'Pyramid (Experimental)', ''),
+                                                       ('summon_tetrahedron', 'Tetrahedron (Experimental)', ''),
+                                                       ('summon_tetrahedral_wedge', 'Tetrahedral wedge (Experimental)', '')],
+                                              default = 'summon_hexahedrons',
                                               description = "Cell Shape Types")
     
     bpy.types.Scene.cellShape_units = IntProperty(min=1,
