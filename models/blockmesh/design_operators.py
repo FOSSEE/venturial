@@ -8,14 +8,7 @@ class VNT_OT_add_to_viewport(Operator):
     bl_label = "Add to Viewport" 
     bl_idname = "vnt.add_to_viewport"
     bl_description = "Add chosen number of cell shape units to the viewport" 
-    
-    # action : EnumProperty(name= "",
-    #                       description= "Type of Edge (pre-defined)",
-    #                       items= [('summon_hexahedrons', "arc", ""),
-    #                               ('polyLine', "polyLine", ""),
-    #                               ('spline', "spline", ""),
-    #                               ('BSpline', "BSpline", "")])
-    
+
     def summon_hexahedrons(self, context):
         scn = context.scene
         
