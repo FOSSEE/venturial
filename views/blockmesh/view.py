@@ -2,7 +2,7 @@
 from venturial.models.header.file_handling_operators import *
 from venturial.models.blockmesh.design_operators import *
 from venturial.utils.custom_icon_object_generator import *
-
+from bpy.types import Panel
 
 class blockmesh_layout_controller:
     """Controller class for defining and designating layout callbacks"""
@@ -59,15 +59,21 @@ class blockmesh_layout_controller:
         row1c1.label(text="Cells:")
         
         row1c2 = split.row(align = True)
-        row1c2split = row1c2.split(factor = 0.67)
+        row1c2split = row1c2.split(factor = 0.50)
         
-        row1c2c1 = row1c2split.row(align=True)
-        row1c2c2 = row1c2split.row()
+        row1c2c1 = row1c2split.row(align=True).split(factor=0.33, align=True)
+        row1c2c1p1 = row1c2c1.row(align=True)
+        row1c2c1p2 = row1c2c1.row(align=True)
         
-        row1c2c1.prop(cs, "cellShape_units", text="", slider=True)
-        row1c2c1.prop(cs, "cellShapes", text="")
+        row1c2c2 = row1c2split.row(align=True).split(factor=0.3175, align=True)
+        row1c2c2p1 = row1c2c2.row(align=True)
+        row1c2c2p2 = row1c2c2.row(align=True)
         
-        row1c2c2.operator(VNT_OT_add_to_viewport.bl_idname, text="Add to Viewport")
+        row1c2c1p1.prop(cs, "cellShape_units", text="", slider=True)
+        row1c2c1p2.prop(cs, "cellShapes", text="")
+        
+        row1c2c2p1.popover(VNT_PT_cell_location.bl_idname, text=cs.spawn_type)
+        row1c2c2p2.operator(VNT_OT_add_to_viewport.bl_idname, text="Create Cells")
         
         row2 = layout.row()
         split = row2.split(factor = 0.185)
@@ -147,4 +153,21 @@ class blockmesh_layout_controller:
         row6bb2.operator(VNT_OT_remove_blocks.bl_idname, icon="CANCEL", text="")
         row6bb2.operator(VNT_OT_remove_all_blocks.bl_idname, icon="TRASH", text="")
         row6bb2.operator(VNT_OT_clearblocks.bl_idname, icon="TRASH", text="")
+        
+class VNT_PT_cell_location(Panel):
+    """A pop-up UI panel for selecting the location of cell generation"""
+    bl_idname = "VNT_PT_cell_location"
+    bl_label = ""
+    bl_space_type =  "VIEW_3D"   
+    bl_region_type = "UI"
+    bl_options = {'INSTANCED'}
+
+    def draw(self, context):
+        layout = self.layout
+        cs = context.scene
+        
+        row = layout.row(align=True)
+        row.operator(VNT_OT_location_spawnner.bl_idname, text="Grid", depress=True if cs.spawn_type == "Grid" else False).options = "Grid"
+        row.operator(VNT_OT_location_spawnner.bl_idname, text="3D Cursor", depress=True if cs.spawn_type == "3D Cursor" else False).options = "3D Cursor"
+        row.operator(VNT_OT_location_spawnner.bl_idname, text="Center", depress=True if cs.spawn_type == "Center" else False).options = "Center"
         

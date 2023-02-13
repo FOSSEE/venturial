@@ -1,13 +1,43 @@
 from bpy.types import Operator
-from bpy.props import BoolProperty, EnumProperty
+from bpy.props import BoolProperty, EnumProperty, IntProperty, StringProperty
 import bpy, numpy as np, bmesh
+from venturial.utils.custom_icon_object_generator import *
+
+class VNT_OT_location_spawnner(Operator):
+    """Click to see options for cell locations"""
+    bl_label = "Click to see options for cell locations" 
+    bl_idname = "vnt.location_spawnner"
+    bl_description = " "
+
+    options : EnumProperty(items = [("Grid", "Grid", "Generate cells in a grid."),
+                                    ("3D Cursor", "3D Cursor", "Generate cells at the 3D cursor"),
+                                    ("Center", "Center", "Generate cells at the center.")],
+                           default = "Grid")
+    
+    x : IntProperty()
+    y : IntProperty()
+    
+    def execute(self, context):   
+        context.scene.spawn_type = self.options
+        bpy.context.window.cursor_warp(0, 0)
+        bpy.context.window.cursor_warp(self.x, self.y)
+        
+        return {'FINISHED'}
+        
+    def invoke(self, context, event):
+        self.x = event.mouse_x
+        self.y = event.mouse_y
+        
+        return self.execute(context)
 
 class VNT_OT_add_to_viewport(Operator):
     """Add chosen number of cell shape units to the viewport"""
     
-    bl_label = "Add to Viewport" 
+    bl_label = "Create Cells"
     bl_idname = "vnt.add_to_viewport"
     bl_description = "Add chosen number of cell shape units to the viewport" 
+    #bl_options = {'REGISTER', 'UNDO'}
+    
 
     def summon_hexahedrons(self, context):
         scn = context.scene
@@ -156,14 +186,58 @@ class VNT_OT_add_to_viewport(Operator):
             for obj in bpy.context.scene.objects:
                 obj.select_set(False)
                 bpy.context.view_layer.objects.active = obj 
+                
+    
+        #return {'RUNNING_MODAL'} 
 
-    def execute(self, context):
+    def draw(self, context):
+        #layout.alignment doesn't work here: probable bug in blender.
         cs = context.scene
-        getattr(self, cs.cellShapes)(context)
-
+        layout = self.layout
+        
+        if cs.spawn_type != "Grid":
+            split = layout.split(factor = 0.32)
+            c1 = split.row()
+            c2 = split.row().column().box()
+            
+            c1.template_icon(icon_value=custom_icons["warning_sign_1"]["warning_sign_1"].icon_id, scale=3)
+            c2.label(text="          This will create multiple cells at " + cs.spawn_type + " ?")
+            c2.label(text="Switch to grid mode to distribute multiple cells in a grid.")
+            
+        else:
+            layout.label(text="                                                       Click OK to proceed.")
+        
+        row1 = layout.row()
+        row1.alignment = "EXPAND"
+        row1.operator(VNT_OT_location_spawnner.bl_idname, text="Grid", depress=True if cs.spawn_type == "Grid" else False).options = "Grid"
+        row1.operator(VNT_OT_location_spawnner.bl_idname, text="3D Cursor", depress=True if cs.spawn_type == "3D Cursor" else False).options = "3D Cursor"
+        row1.operator(VNT_OT_location_spawnner.bl_idname, text="Center", depress=True if cs.spawn_type == "Center" else False).options = "Center"
+        
+    def execute(self, context):
+        #cs = context.scene
+        #getattr(self, cs.cellShapes)(context)
+        print("executed")
         return {'FINISHED'} 
     
+    def invoke(self, context, event):
+        if context.scene.cellShape_units > 1 and context.scene.spawn_type != "Grid":
+            return context.window_manager.invoke_props_dialog(self, width=440)
+        else:
+            return self.execute(context)
+
+class VNT_OT_fake_operator(Operator):
     
+    bl_label = ""
+    bl_description = ""
+    bl_idname = "vnt.compose"
+    filename = StringProperty(subtype="FILE_PATH")
+   
+    def execute(self, context):
+        #context.window_manager.fileselect_add(self)   
+        
+        keyboard.press_and_release('esc')
+        return {'FINISHED'} 
+        # return context.window_manager.fileselect_add(self)
 
 class VNT_OT_compose(Operator):
     """Select Blocks to Join and merge All Overlapping Vertices, Faces and Edges to build Geometry. 

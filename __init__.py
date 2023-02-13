@@ -46,6 +46,7 @@ from venturial.models.blockmesh.design_operators import *
 
 from venturial.views.user_mode_view import VNT_PT_usermodeview
 from venturial.views.header.view import *
+from venturial.views.blockmesh.view import VNT_PT_cell_location
 from venturial.views.schemas.UIList_schemas import *
 
 from venturial.utils.custom_icon_object_generator import register_custom_icon, unregister_custom_icon
@@ -154,6 +155,8 @@ classes = (VNT_OT_new_mesh_file,
            CUSTOM_objectCollection,
            VNT_UL_mesh_file_manager,
            VNT_UL_mesh_file_coroner,
+           VNT_PT_cell_location,
+           VNT_OT_location_spawnner,
            VNT_OT_add_to_viewport,
            VNT_OT_compose,
            VNT_OT_get_blocks,
@@ -162,7 +165,8 @@ classes = (VNT_OT_new_mesh_file,
            VNT_OT_clearblocks,
            VNT_OT_blocksdatacontrol,
            VNT_OT_showselectedblocks,
-           VNT_OT_select_unselect_allblocks)
+           VNT_OT_select_unselect_allblocks,
+           VNT_OT_fake_operator)
 
 
 def update_prompt_meshing_tool(self, context):
@@ -223,6 +227,7 @@ def register():
     register_custom_icon("fossee_logo", "/venturial/icons/custom_icons/fossee_logo.png")
     register_custom_icon("new_mesh_file_2", "/venturial/icons/custom_icons/new_mesh_file_2.png")
     register_custom_icon("build_mesh_2", "/venturial/icons/custom_icons/build_mesh_2.png")
+    register_custom_icon("warning_sign_1", "/venturial/icons/custom_icons/warning_sign_1.png")
     
     for cls in classes:
         register_class(cls)
@@ -235,6 +240,11 @@ def register():
                                                       ("Post-Processing", "Post-Processing", "")],
                                                      default = "BlockMesh",
                                                      update = update_uicategory_mode)
+    
+    bpy.types.Scene.spawn_type = EnumProperty(items = [("Grid", "Grid", ""),
+                                                       ("3D Cursor", "3D Cursor", ""),
+                                                       ("Center", "Center", "")],
+                                              default = "Grid")
     
     
     bpy.types.Scene.prompt_meshing_tool = EnumProperty(default = 'BlockMesh',
@@ -396,7 +406,7 @@ def unregister():
     unregister_custom_icon("fossee_logo", "/venturial/icons/custom_icons/fossee_logo.png")
     unregister_custom_icon("new_mesh_file_2", "/venturial/icons/custom_icons/new_mesh_file_2.png")
     unregister_custom_icon("build_mesh_2", "/venturial/icons/custom_icons/build_mesh_2.png")
-    
+    unregister_custom_icon("warning_sign_1", "/venturial/icons/custom_icons/warning_sign_1.png")
 
     del bpy.types.Scene.ui_category  
     del bpy.types.Scene.tool_type   
