@@ -36,69 +36,13 @@ class VNT_OT_add_to_viewport(Operator):
     bl_label = "Create Cells"
     bl_idname = "vnt.add_to_viewport"
     bl_description = "Add chosen number of cell shape units to the viewport" 
-    #bl_options = {'REGISTER', 'UNDO'}
-    
-
+  
     def summon_hexahedrons(self, context):
-        scn = context.scene
+        cs = context.scene
         
-        for i in range(0, scn.cellShape_units):
+        for i in range(0, cs.cellShape_units):
             loc = [np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0)]
-            bpy.ops.mesh.primitive_cube_add(location=loc)
-            
-            obj = bpy.context.object
-            bpy.context.object.show_wire = True
-            mat = obj.matrix_world
-                  
-            LV_list = [[-1.0, -1.0, -1.0], 
-                       [1.0, -1.0, -1.0],  
-                       [1.0, 1.0, -1.0], 
-                       [-1.0, 1.0, -1.0], 
-                       [-1.0, -1.0, 1.0], 
-                       [1.0, -1.0, 1.0], 
-                       [1.0, 1.0, 1.0], 
-                       [-1.0, 1.0, 1.0]]    
-                       
-            bpy.ops.object.mode_set(mode='EDIT')
-            
-            bm=bmesh.from_edit_mesh(obj.data)
-            dml_order = [0, 0, 0, 0, 0, 0, 0, 0]
-            v_order = [0, 4, 6, 2, 1, 5, 7, 3]
-            
-            block_origin = []
-            for v in bm.verts:
-                if v.index == 0:
-                    block_origin = list(mat @ v.co)
-                for i in range(0, len(dml_order)):
-                    if list(v.co) == LV_list[i]:
-                        dml_order[i] = list(mat @ v.co)
-            
-            for k in range(0, len(v_order)):
-                
-                item = scn.simblk.add()
-                item.name = obj.name
-                item.index = v_order[k]
-                item.vertptx = dml_order[k][0]
-                item.vertpty = dml_order[k][1]
-                item.vertptz = dml_order[k][2]
-                
-            bpy.ops.object.mode_set(mode='OBJECT')
-            scn.cnt += 1
-            
-            bpy.ops.object.empty_add(type='ARROWS', align='WORLD', location=block_origin, scale=(1, 1, 1))
-            
-            mt = bpy.context.active_object
-            mt.parent = obj
-            mt.parent_type = 'VERTEX'
-            
-            mt.parent_vertices[0] = 0
-            bpy.context.object.location[0] = 0
-            bpy.context.object.location[1] = 0
-            bpy.context.object.location[2] = 0
-            
-            bpy.ops.object.select_all(action='DESELECT')
-            bpy.context.view_layer.objects.active = obj
-            obj.select_set(True)
+            bpy.ops.mesh.primitive_cube_add(size = 1.0, location=loc)
             
     def summon_prisms(self, context):
         scn = context.scene
@@ -214,9 +158,9 @@ class VNT_OT_add_to_viewport(Operator):
         row1.operator(VNT_OT_location_spawnner.bl_idname, text="Center", depress=True if cs.spawn_type == "Center" else False).options = "Center"
         
     def execute(self, context):
-        #cs = context.scene
-        #getattr(self, cs.cellShapes)(context)
-        print("executed")
+        cs = context.scene
+        getattr(self, cs.cellShapes)(context)
+        
         return {'FINISHED'} 
     
     def invoke(self, context, event):
