@@ -46,7 +46,7 @@ from venturial.models.blockmesh.design_operators import *
 
 from venturial.views.user_mode_view import VNT_PT_usermodeview
 from venturial.views.header.view import *
-from venturial.views.blockmesh.view import VNT_PT_cell_location
+from venturial.views.blockmesh.view import VNT_PT_cell_location, VNT_PT_statistics_settings
 from venturial.views.schemas.UIList_schemas import *
 
 from venturial.utils.custom_icon_object_generator import register_custom_icon, unregister_custom_icon
@@ -156,6 +156,7 @@ classes = (VNT_OT_new_mesh_file,
            VNT_UL_mesh_file_manager,
            VNT_UL_mesh_file_coroner,
            VNT_PT_cell_location,
+           VNT_PT_statistics_settings,
            VNT_OT_location_spawnner,
            VNT_OT_add_to_viewport,
            VNT_OT_compose,
@@ -386,8 +387,7 @@ def register():
                                         max = 30,
                                         default = 1)
 
-    bpy.types.Scene.edgelist = EnumProperty(name= "",
-                                            description= "Type of Edge (pre-defined)",
+    bpy.types.Scene.edgelist = EnumProperty(description= "Type of Edge (pre-defined)",
                                             items= [('arc', "arc", ""),
                                                     ('polyLine', "polyLine", ""),
                                                     ('spline', "spline", ""),
@@ -395,6 +395,43 @@ def register():
     
     bpy.types.Scene.face_sel_mode = BoolProperty(default=False, update=update_face_mode)
     
+    bpy.types.Scene.statistics = BoolProperty(default=True)
+    
+    bpy.types.Scene.bfc = BoolProperty(default=False,
+                                       description="Backface Culling")
+    
+    bpy.types.Scene.xray = BoolProperty(default=False,
+                                        description="X ray mode")
+    
+    bpy.types.Scene.xray_opacity = FloatProperty(name="X-ray opacity",
+                                                 description="X-ray opacity",
+                                                 min = 0.0,
+                                                 max = 1.0,
+                                                 default = 1.0)
+    
+    bpy.types.Scene.geo_params = EnumProperty(description="Geometry parameters",
+                                              items =[('Center', 'Center', ''),
+                                                      ('Orientation', 'Orientation', ''),
+                                                      ('Outline', 'Outline', '')],
+                                              default={"Center", "Orientation", "Outline"},
+                                              options={"ENUM_FLAG"})
+    
+    bpy.types.Scene.outline_color = FloatVectorProperty(name = "Outline Color",
+                                                        subtype = "COLOR",
+                                                        size = 4,
+                                                        min = 0.0,
+                                                        max = 1.0,
+                                                        default = (0.0,0.5,0.0,1.0))
+
+    bpy.types.Scene.shading = EnumProperty(description = "Geometry Shading",
+                                           items = [('Solid', 'Solid', ''),
+                                                    ('Wire', 'Wire', '')])
+
+    bpy.types.Scene.wire_opacity = FloatProperty(name="Wire opacity",
+                                                 description="Wire opacity",
+                                                 min = 0.0,
+                                                 max = 1.0,
+                                                 default = 1.0)
     
 def unregister():
     

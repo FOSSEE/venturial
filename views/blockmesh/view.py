@@ -9,7 +9,8 @@ class blockmesh_layout_controller:
     def __init__(self, type):
         self.type = type
         self.callback = {"Recents": "VNT_ST_recents",
-                         "Design": "VNT_ST_design"}
+                         "Design": "VNT_ST_design",
+                         "Visualize": "VNT_ST_visualize"}
         
     def output(self, layout, context):
         getattr(self, self.callback[self.type])(layout, context)
@@ -153,6 +154,64 @@ class blockmesh_layout_controller:
         row6bb2.operator(VNT_OT_remove_blocks.bl_idname, icon="CANCEL", text="")
         row6bb2.operator(VNT_OT_remove_all_blocks.bl_idname, icon="TRASH", text="")
         row6bb2.operator(VNT_OT_clearblocks.bl_idname, icon="TRASH", text="")
+        
+    def VNT_ST_visualize(self, layout, context):
+        cs = context.scene
+        layout = layout.box()
+        
+        row1 = layout.row().box()
+        
+        title = row1.row()
+        title.label(text= "Geometry")
+        
+        r1spt = row1.split(factor = 0.4)
+        
+        r1c1 = r1spt.row()
+        r1c1.prop(cs, "statistics", toggle=True, text="Statistics") #statistics
+        r1c1.popover(VNT_PT_statistics_settings.bl_idname, text="", icon="DOWNARROW_HLT") #statistics settings
+        
+        r1c2 = r1spt.row(align=True)
+        r1c2.prop(cs, "geo_params", expand=True)
+        r1c2.prop(cs, "outline_color", text="")
+        
+        row2 = row1.row()
+        
+        r2spt = row2.split(factor = 0.4)
+        
+        r2c1 = r2spt.row()
+    
+        r2c2 = r2spt.row()
+        r2c2.prop(cs, "shading", expand=True) #object mode/wire frame mode
+        r2c2.prop(cs, "wire_opacity", slider=True) #wireframe mode opacity
+        
+        row3 = row1.row()
+        
+        r3spt = row3.split(factor = 0.4)
+        
+        r3c1 = r3spt.row()
+    
+        r3c2 = r3spt.row()
+        
+        r3c2.prop(cs, "bfc", toggle=True, text="Backface Culling") #backface culling
+        r3c2.prop(cs, "xray", toggle=True, text="X-ray") #xray
+        r3c2.prop(cs, "xray_opacity", slider=True) #xray opacity control
+        
+
+class VNT_PT_statistics_settings(Panel):
+    """A pop-up UI panel for setting geometry statistics"""
+    bl_idname = "VNT_PT_statistics_settings"
+    bl_label = ""
+    bl_space_type =  "VIEW_3D"   
+    bl_region_type = "UI"
+    bl_options = {'INSTANCED'}
+
+    def draw(self, context):
+        layout = self.layout
+        cs = context.scene
+
+        row = layout.row()
+        row.label(text = "options for setting statistics panel")
+        
         
 class VNT_PT_cell_location(Panel):
     """A pop-up UI panel for selecting the location of cell generation"""
