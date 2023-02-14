@@ -169,19 +169,6 @@ class VNT_OT_add_to_viewport(Operator):
         else:
             return self.execute(context)
 
-class VNT_OT_fake_operator(Operator):
-    
-    bl_label = ""
-    bl_description = ""
-    bl_idname = "vnt.compose"
-    filename = StringProperty(subtype="FILE_PATH")
-   
-    def execute(self, context):
-        #context.window_manager.fileselect_add(self)   
-        
-        keyboard.press_and_release('esc')
-        return {'FINISHED'} 
-        # return context.window_manager.fileselect_add(self)
 
 class VNT_OT_compose(Operator):
     """Select Blocks to Join and merge All Overlapping Vertices, Faces and Edges to build Geometry. 

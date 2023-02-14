@@ -165,8 +165,7 @@ classes = (VNT_OT_new_mesh_file,
            VNT_OT_clearblocks,
            VNT_OT_blocksdatacontrol,
            VNT_OT_showselectedblocks,
-           VNT_OT_select_unselect_allblocks,
-           VNT_OT_fake_operator)
+           VNT_OT_select_unselect_allblocks)
 
 
 def update_prompt_meshing_tool(self, context):
