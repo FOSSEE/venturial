@@ -181,8 +181,13 @@ class blockmesh_layout_controller:
         r2c1 = r2spt.row()
     
         r2c2 = r2spt.row()
-        r2c2.prop(cs, "shading", expand=True) #object mode/wire frame mode
-        r2c2.prop(cs, "wire_opacity", slider=True) #wireframe mode opacity
+        
+        r2c2spt = r2c2.split(factor=0.5, align=True)
+        r2c2r1 = r2c2.row()
+        r2c2r2 = r2c2.row()
+        
+        r2c2r1.prop(cs, "shading", expand=True) #object mode/wire frame mode
+        r2c2r2.prop(cs, "wire_opacity", slider=True) #wireframe mode opacity
         
         row3 = row1.row()
         
@@ -192,9 +197,13 @@ class blockmesh_layout_controller:
     
         r3c2 = r3spt.row()
         
-        r3c2.prop(cs, "bfc", toggle=True, text="Backface Culling") #backface culling
-        r3c2.prop(cs, "xray", toggle=True, text="X-ray") #xray
-        r3c2.prop(cs, "xray_opacity", slider=True) #xray opacity control
+        r3c2spt = r3c2.split(factor=0.5, align=True)
+        r3c2r1 = r3c2.row(align=True)
+        r3c2r2 = r3c2.row()
+        
+        r3c2r1.prop(cs, "bfc", toggle=True, text="BFC") #backface culling
+        r3c2r1.prop(cs, "xray", toggle=True, text="X-ray") #xray
+        r3c2r2.prop(cs, "xray_opacity", slider=True) #xray opacity control
         
 
 class VNT_PT_statistics_settings(Panel):

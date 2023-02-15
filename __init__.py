@@ -395,7 +395,7 @@ def register():
     
     bpy.types.Scene.face_sel_mode = BoolProperty(default=False, update=update_face_mode)
     
-    bpy.types.Scene.statistics = BoolProperty(default=True)
+    bpy.types.Scene.statistics = BoolProperty(default=False)
     
     bpy.types.Scene.bfc = BoolProperty(default=False,
                                        description="Backface Culling")
@@ -407,7 +407,7 @@ def register():
                                                  description="X-ray opacity",
                                                  min = 0.0,
                                                  max = 1.0,
-                                                 default = 1.0)
+                                                 default = 0.5)
     
     bpy.types.Scene.geo_params = EnumProperty(description="Geometry parameters",
                                               items =[('Center', 'Center', ''),
@@ -431,7 +431,7 @@ def register():
                                                  description="Wire opacity",
                                                  min = 0.0,
                                                  max = 1.0,
-                                                 default = 1.0)
+                                                 default = 0.5)
     
 def unregister():
     
