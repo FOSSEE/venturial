@@ -161,6 +161,13 @@ class blockmesh_layout_controller:
         
         getattr(visualizer_view_controller(), "geometry_visualizer")(outline, context)
         
+        r1spt = outline.split(factor=0.5)
+        
+        vert_outline = r1spt.row()
+        block_outline =  r1spt.row()
+        
+        getattr(visualizer_view_controller(), "vertex_visualizer")(vert_outline, context)
+        getattr(visualizer_view_controller(), "block_visualizer")(block_outline, context)
         
 class VNT_PT_cell_location(Panel):
     """A pop-up UI panel for selecting the location of cell generation"""

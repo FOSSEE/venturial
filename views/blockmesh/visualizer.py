@@ -56,7 +56,19 @@ class visualizer_view_controller:
         r3c2r1.prop(cs, "xray", toggle=True, text="X-ray") #xray
         r3c2r2.prop(cs, "xray_opacity", slider=True) #xray opacity control
         
+    def vertex_visualizer(self, content, context):    
+        cs = context.scene
+        row1 = content.row().box()
         
+        title = row1.row()
+        title.label(text= "Vertex")
+        
+    def block_visualizer(self, content, context):
+        cs = context.scene
+        row1 = content.row().box()
+        
+        title = row1.row()
+        title.label(text= "Blocks")
 
 class VNT_PT_statistics_settings(Panel):
     """A pop-up UI panel for setting geometry statistics"""
