@@ -46,7 +46,8 @@ from venturial.models.blockmesh.design_operators import *
 
 from venturial.views.user_mode_view import VNT_PT_usermodeview
 from venturial.views.header.view import *
-from venturial.views.blockmesh.view import VNT_PT_cell_location, VNT_PT_statistics_settings
+from venturial.views.blockmesh.view import VNT_PT_cell_location
+from venturial.views.blockmesh.visualizer import VNT_PT_statistics_settings
 from venturial.views.schemas.UIList_schemas import *
 
 from venturial.utils.custom_icon_object_generator import register_custom_icon, unregister_custom_icon
