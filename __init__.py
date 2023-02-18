@@ -38,6 +38,7 @@ from venturial.models.header.help_menu_operators import *
 
 from venturial.models.blockmesh.layout_operators import *
 from venturial.models.blockmesh.design_operators import *
+from venturial.models.blockmesh.visualizer_operators import VNT_OT_vertex_data_control
 # from venturial.models.geometry_designer_operators import *
 # from venturial.models.mesh_file_manager_operators import *
 # from venturial.models.get_vertices_operators import *
@@ -51,6 +52,45 @@ from venturial.views.blockmesh.visualizer import VNT_PT_statistics_settings
 from venturial.views.schemas.UIList_schemas import *
 
 from venturial.utils.custom_icon_object_generator import register_custom_icon, unregister_custom_icon
+
+
+
+
+# Draw Vertex Coordinates and Indices from Geometry (Dynamic) 
+# def disp_vco_geo(context, inpt):
+    
+#     scn = context.scene
+#     obj = bpy.context.active_object
+    
+#     try:
+#         if obj.type == "MESH":
+#             mat = obj.matrix_world
+#             v3d = context.space_data
+#             rv3d = v3d.region_3d
+
+#             # Vertices from Geometry ----------------------------------------------------------
+#             verts_geo = []
+#             vert_ind = []  
+#             for v in obj.data.vertices:
+#                 if v.select:
+#                     glob_co = list(mat @ v.co)
+#                     verts_geo.append([list(np.around(np.array(glob_co), 3)), v.index])
+#                     vert_ind.append(v.index)
+
+#             i = 0
+#             while i < len(verts_geo):
+#                 pos_text = location_3d_to_region_2d(context.region, rv3d, verts_geo[i][0])
+#                 blf.position(0, pos_text[0], pos_text[1], 0)
+#                 blf.size(0, scn.vert_size, scn.vert_size)
+#                 if scn.en_vert_ic and scn.vert_ic == 'OP1':
+#                     blf.draw(0, str(verts_geo[i][1]) + ", " + str(verts_geo[i][0]))
+#                 else:
+#                     blf.draw(0, "")
+#                 i+=1
+    
+#     except AttributeError:
+#         pass
+
 
 class CUSTOM_objectCollection(PropertyGroup): 
     
@@ -167,7 +207,8 @@ classes = (VNT_OT_new_mesh_file,
            VNT_OT_clearblocks,
            VNT_OT_blocksdatacontrol,
            VNT_OT_showselectedblocks,
-           VNT_OT_select_unselect_allblocks)
+           VNT_OT_select_unselect_allblocks,
+           VNT_OT_vertex_data_control)
 
 
 def update_prompt_meshing_tool(self, context):
@@ -223,6 +264,7 @@ def test_enum_update(self, context):
 
 
 def register():  
+    #bpy.types.SpaceView3D.draw_handler_add(disp_vco_geo, (bpy.context, None), 'WINDOW', 'POST_PIXEL')
     
     register_custom_icon("venturial_logo", "/venturial/icons/custom_icons/venturial_logo.png")
     register_custom_icon("fossee_logo", "/venturial/icons/custom_icons/fossee_logo.png")
@@ -434,6 +476,14 @@ def register():
                                                  max = 1.0,
                                                  default = 0.5)
     
+    bpy.types.Scene.en_vert_ic = BoolProperty(name = "")
+    
+    bpy.types.Scene.vert_size = IntProperty(name = "Text Size:", 
+                                            description = "Select Size of Vertex Info Text being Displayed",
+                                            min = 6,
+                                            max = 70,
+                                            default = 30)
+    
 def unregister():
     
     for cls in reversed(classes):
@@ -493,72 +543,3 @@ def unregister():
     
     
     
-    
-    
-    
-    
-    
-        
-    
-    # del bpy.types.Scene.category 
-    # del bpy.types.Scene.category_expand 
-    # del bpy.types.Scene.meshing_tool_type 
-    # del bpy.types.Scene.non_meshing_tool_type
-
-    # del bpy.types.Scene.geo_design_options 
-    # del bpy.types.Scene.cellShapes 
-    # del bpy.types.Scene.cellShape_units 
-                                         
-    # del bpy.types.Scene.mfile_item_ptr 
-    # del bpy.types.Scene.mfile_item 
-    # del bpy.types.Scene.mfile_item_index 
-    
-    # del bpy.types.Scene.mesh_dict_name 
-    # del bpy.types.Scene.mesh_dict_path 
-    # del bpy.types.Scene.row_en
-    
-    # del bpy.types.Scene.cell_x                        
-    # del bpy.types.Scene.cell_y 
-    # del bpy.types.Scene.cell_z                        
-    # del bpy.types.Scene.ctm
-                       
-    # del bpy.types.Scene.transform     
-    # del bpy.types.Scene.transformation_methods
-                                          
-    # del bpy.types.Scene.snapping    
-    # del bpy.types.Scene.snapping_methods 
-                                                                                 
-    # del bpy.types.Scene.simblk 
-    # del bpy.types.Scene.simblk_index 
-    
-    # del bpy.types.Scene.bcustom 
-    # del bpy.types.Scene.bcustom_index 
-    
-    # del bpy.types.Scene.mode
-    
-    # del bpy.types.Scene.vcustom
-    # del bpy.types.Scene.vcustom_index
-    
-    # del bpy.types.Scene.fcustom
-    # del bpy.types.Scene.fcustom_index
-    
-    # del bpy.types.Scene.bdclist
-    # del bpy.types.Scene.face_name
-    # del bpy.types.Scene.facedes
-    
-    # del bpy.types.Scene.acustom 
-    # del bpy.types.Scene.acustom_index 
-     
-    # del bpy.types.Scene.pcustom 
-    # del bpy.types.Scene.pcustom_index 
-     
-    # del bpy.types.Scene.scustom 
-    # del bpy.types.Scene.scustom_index 
-     
-    # del bpy.types.Scene.bscustom 
-    # del bpy.types.Scene.bscustom_index 
-    
-    # del bpy.types.Scene.ipcnt
-    # del bpy.types.Scene.edgelist
-    
-    # del bpy.types.Scene.face_sel_mode

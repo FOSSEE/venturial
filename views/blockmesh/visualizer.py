@@ -1,4 +1,5 @@
 from bpy.types import Panel
+from venturial.models.blockmesh.visualizer_operators import VNT_OT_vertex_data_control
 
 class visualizer_view_controller:
     """Methods defining the sections of the blockmesh visualizer tool"""
@@ -18,7 +19,7 @@ class visualizer_view_controller:
         
         r1c2 = r1spt.row(align=True)
         
-        r1c2spt = r1c2.split(factor=0.7, align=True)
+        r1c2spt = r1c2.split(factor=0.75, align=True)
         r1c2r1 = r1c2spt.row(align=True)
         r1c2r2 = r1c2spt.row(align=True)
                 
@@ -33,7 +34,7 @@ class visualizer_view_controller:
     
         r2c2 = r2spt.row()
         
-        r2c2spt = r2c2.split(factor=0.46, align=True)
+        r2c2spt = r2c2.split(factor=0.50, align=True)
         r2c2r1 = r2c2spt.row()
         r2c2r2 = r2c2spt.row()
         
@@ -48,7 +49,7 @@ class visualizer_view_controller:
     
         r3c2 = r3spt.row()
         
-        r3c2spt = r3c2.split(factor=0.46, align=True)
+        r3c2spt = r3c2.split(factor=0.50, align=True)
         r3c2r1 = r3c2spt.row(align=True)
         r3c2r2 = r3c2spt.row()
         
@@ -62,6 +63,13 @@ class visualizer_view_controller:
         
         title = row1.row()
         title.label(text= "Vertex")
+        
+        r1 = row1.row()
+        r1.operator(VNT_OT_vertex_data_control.bl_idname, text="Show Verts")
+        
+        r2 = row1.row()
+        r2.prop(cs, "en_vert_ic")
+        r2.prop(cs, "vert_size")
         
     def block_visualizer(self, content, context):
         cs = context.scene
