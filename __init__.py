@@ -476,13 +476,33 @@ def register():
                                                  max = 1.0,
                                                  default = 0.5)
     
-    bpy.types.Scene.en_vert_ic = BoolProperty(name = "")
+    bpy.types.Scene.enable_vert_vis = BoolProperty(name = "")
     
-    bpy.types.Scene.vert_size = IntProperty(name = "Text Size:", 
-                                            description = "Select Size of Vertex Info Text being Displayed",
-                                            min = 6,
-                                            max = 70,
-                                            default = 30)
+    bpy.types.Scene.vert_order = BoolProperty(name = "")
+    
+    bpy.types.Scene.vert_props = EnumProperty(description="Vertex visualization properties",
+                                              items =[('Indices', 'Indices', ''),
+                                                      ('Coordinates', 'Coordinates', '')],
+                                              default={"Indices"},
+                                              options={"ENUM_FLAG"})
+    
+    bpy.types.Scene.vert_source = EnumProperty(description="Vertex visualization properties",
+                                               items =[('Geometry', 'Geometry', ''),
+                                                       ('blockmeshdict', 'blockmeshdict', '')],
+                                               default="Geometry")
+    
+    bpy.types.Scene.vert_text_size = IntProperty(name = "Text Size:", 
+                                                 description = "Select Size of Vertex Info Text being Displayed",
+                                                 min = 6,
+                                                 max = 70,
+                                                 default = 30)
+    
+    bpy.types.Scene.vert_text_color = FloatVectorProperty(name = "Text Color",
+                                                          subtype = "COLOR",
+                                                          size = 4,
+                                                          min = 0.0,
+                                                          max = 1.0,
+                                                          default = (0.0,0.5,0.0,1.0))
     
 def unregister():
     

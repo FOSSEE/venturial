@@ -10,6 +10,7 @@ class visualizer_view_controller:
         
         title = row1.row()
         title.label(text= "Geometry")
+        #row1.alignment = "CENTER"
         
         r1spt = row1.split(factor = 0.4)
         
@@ -58,18 +59,57 @@ class visualizer_view_controller:
         r3c2r2.prop(cs, "xray_opacity", slider=True) #xray opacity control
         
     def vertex_visualizer(self, content, context):    
+        
         cs = context.scene
         row1 = content.row().box()
         
         title = row1.row()
+        title.alignment = "CENTER"
         title.label(text= "Vertex")
         
         r1 = row1.row()
-        r1.operator(VNT_OT_vertex_data_control.bl_idname, text="Show Verts")
+        r1spt = r1.split(factor = 0.2)
+        
+        r1c1 = r1spt.row()
+        r1c2 = r1spt.row()
+        
+        if cs.enable_vert_vis == True:
+            r1c1.alert = True  
+            
+        r1c1.operator(VNT_OT_vertex_data_control.bl_idname, 
+                      text="", 
+                      icon="CHECKMARK" if cs.enable_vert_vis == False else "PANEL_CLOSE")
+            
+        r1c2.enabled = cs.enable_vert_vis
+        r1c2.prop(cs, "vert_props", expand=True)
         
         r2 = row1.row()
-        r2.prop(cs, "en_vert_ic")
-        r2.prop(cs, "vert_size")
+        r2.enabled = cs.enable_vert_vis
+        r2spt = r2.split(factor = 0.215, align=True)
+        
+        r2c1 = r2spt.row(align=True)
+        r2c2 = r2spt.row(align=True)
+        
+        r2c1.box().label(text="Source")
+        r2c1.scale_y = 0.56
+        r2c1.alignment = "CENTER"
+        r2c2.prop(cs, "vert_source", expand=True)
+        
+        r3 = row1.row()
+        r3.enabled = cs.enable_vert_vis
+        r3spt = r3.split(factor = 0.2)
+        
+        r3c1 = r3spt.row()
+        r3c2 = r3spt.row(align=True)
+        
+        r3c2spt = r3c2.split(align=True)
+        
+        r3c2c1 = r3c2.row(align=True)
+        r3c2c2 = r3c2.row(align=True)
+         
+        r3c1.prop(cs, "vert_order", text="Order", toggle=True)
+        r3c2c1.prop(cs, "vert_text_size", slider = True, text="Text Size")
+        r3c2c2.prop(cs, "vert_text_color", text="")
         
     def block_visualizer(self, content, context):
         cs = context.scene
