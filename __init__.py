@@ -494,15 +494,15 @@ def register():
     bpy.types.Scene.vert_text_size = IntProperty(name = "Text Size:", 
                                                  description = "Select Size of Vertex Info Text being Displayed",
                                                  min = 6,
-                                                 max = 70,
-                                                 default = 30)
+                                                 max = 100,
+                                                 default = 40)
     
     bpy.types.Scene.vert_text_color = FloatVectorProperty(name = "Text Color",
                                                           subtype = "COLOR",
                                                           size = 4,
                                                           min = 0.0,
                                                           max = 1.0,
-                                                          default = (0.0,0.5,0.0,1.0))
+                                                          default = (0.0,0.0,1.0,1.0))
     
 def unregister():
     

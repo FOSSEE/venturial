@@ -116,6 +116,7 @@ class visualizer_view_controller:
         row1 = content.row().box()
         
         title = row1.row()
+        title.alignment = "CENTER"
         title.label(text= "Blocks")
 
 class VNT_PT_statistics_settings(Panel):
