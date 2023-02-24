@@ -14,8 +14,8 @@ class VNT_OT_vertex_data_control(Operator):
     bl_description = "Toggle to view vertex properties"
     bl_label = ""
     
-    mouse_x : IntProperty()
-    mouse_y : IntProperty()
+    quit_modal_x : IntProperty()
+    quit_modal_y : IntProperty()
     
     def get_vertex_properties(self, geo):
         vert_prop = {}
@@ -54,10 +54,21 @@ class VNT_OT_vertex_data_control(Operator):
         cs = context.scene
         context.area.tag_redraw()
         if cs.enable_vert_vis == False:
-            bpy.types.SpaceView3D.draw_handler_remove(self._handle_2d, 'WINDOW')
-            return {'CANCELLED'}
+            
+            #get the mouse coordinates when handler is disabled
+            x = event.mouse_x 
+            y = event.mouse_y
+            
+            #re-locate to the same location. This is clearly cheating but works
+            #as a triggers the handler removal. ;D
+            bpy.context.window.cursor_warp(event.mouse_x, event.mouse_y)
 
-        return {'PASS_THROUGH'}
+            bpy.types.SpaceView3D.draw_handler_remove(self._handle_2d, 'WINDOW')
+            
+            return {'CANCELLED'}
+        
+        else:
+            return {'PASS_THROUGH'}
 
     def invoke(self, context, event):
         cs = context.scene
