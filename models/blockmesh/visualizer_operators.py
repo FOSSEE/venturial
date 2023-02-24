@@ -6,12 +6,16 @@ import gpu
 from gpu_extras.batch import batch_for_shader
 from bpy_extras.view3d_utils import location_3d_to_region_2d
 from bpy.types import Operator
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty, IntProperty
 
 class VNT_OT_vertex_data_control(Operator):
+    """Modal Operator to view vertex properties of a selected geometry"""
     bl_idname = "vnt.vertex_data_control"
-    bl_description = "Modal Operator to view vertex properties"
+    bl_description = "Toggle to view vertex properties"
     bl_label = ""
+    
+    mouse_x : IntProperty()
+    mouse_y : IntProperty()
     
     def get_vertex_properties(self, geo):
         vert_prop = {}
@@ -31,9 +35,21 @@ class VNT_OT_vertex_data_control(Operator):
             blf.size(0, cs.vert_text_size, cs.vert_text_size)
             
             blf.color(0, cs.vert_text_color[0], cs.vert_text_color[1], cs.vert_text_color[2], cs.vert_text_color[3])
-            blf.draw(0, str(i))
-    
-    
+            
+            if cs.vert_props == {"Indices"}:
+                x = str(i)
+                
+            elif cs.vert_props == {"Coordinates"}:
+                x = "(" + ",".join(str(m) for m in j) + ")"
+                
+            elif cs.vert_props == {"Indices", "Coordinates"}:
+                x = str(i) + " " + "(" + ",".join(str(m) for m in j) + ")"
+                
+            else: 
+                x = ""
+                               
+            blf.draw(0, x)
+ 
     def modal(self, context, event):
         cs = context.scene
         context.area.tag_redraw()
