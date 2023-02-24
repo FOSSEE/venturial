@@ -75,7 +75,7 @@ class VNT_OT_new_mesh_file(Operator):
     def draw(self, context):
         layout = self.layout
         getattr(new_mesh_file_prompt(), "draw")(layout, context)
-
+     
     def execute(self, context):
 
         getattr(new_mesh_file_prompt(), "execute")(self, context)

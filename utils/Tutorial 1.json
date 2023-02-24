@@ -1,0 +1,18 @@
+{
+    "line1": {
+        "type": "ml_text",
+        "value": "Sample text: A random paragraph is present here."
+    },
+    "line2": {
+        "type": "img",
+        "value": "/home/usr/bin/addon/images/img1.png"
+    },
+    "line3": {
+        "type": "ml_text",
+        "value": "Some random text"
+    },
+    "line4": {
+        "type": "img",
+        "value": "/home/usr/bin/addon/images/img2.png"
+    }
+}
