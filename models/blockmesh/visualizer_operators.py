@@ -36,6 +36,8 @@ class VNT_OT_vertex_data_control(Operator):
             
             blf.color(0, cs.vert_text_color[0], cs.vert_text_color[1], cs.vert_text_color[2], cs.vert_text_color[3])
             
+            #Shabby code here |. Modify this later 
+            #                 V
             if cs.vert_props == {"Indices"}:
                 x = str(i)
                 
@@ -55,12 +57,12 @@ class VNT_OT_vertex_data_control(Operator):
         context.area.tag_redraw()
         if cs.enable_vert_vis == False:
             
-            #get the mouse coordinates when handler is disabled
+            # get the mouse coordinates when handler is disabled
             x = event.mouse_x 
             y = event.mouse_y
             
-            #re-locate to the same location. This is clearly cheating but works
-            #as a triggers the handler removal. ;D
+            # re-locate to the same location. This is clearly cheating but works
+            # as a triggers the handler removal. ;D
             bpy.context.window.cursor_warp(event.mouse_x, event.mouse_y)
 
             bpy.types.SpaceView3D.draw_handler_remove(self._handle_2d, 'WINDOW')
