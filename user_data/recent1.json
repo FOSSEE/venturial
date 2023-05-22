@@ -1,0 +1,8 @@
+{
+  "name": "blockMeshDict",
+  "index": 1,
+  "type": "snappyhexmesh",
+  "timestamp": "date/time during save",
+  "mesh_json": "some_location",
+  "blend_file": "some_other_location"
+}

@@ -1,6 +1,6 @@
 from bpy.types import (UIList, PropertyGroup)
-from bpy.props import StringProperty, BoolProperty, IntProperty
-
+from bpy.props import StringProperty, BoolProperty, IntProperty, EnumProperty
+#from venturial.models.header.file_handling_operators import VNT_OT_deactivate_mesh_file_item
 class VNT_UL_mesh_file_manager(UIList):
     """Callable class for mesh file manager"""
     
@@ -9,12 +9,39 @@ class VNT_UL_mesh_file_manager(UIList):
         cs = context.scene
         row = layout.box().row()
         row.scale_y = 0.68
+    
+        r2spt = row.split(factor=0.167, align=True)
+        a = r2spt.row(align=True)
+        b = r2spt.row(align=True)
         
-        row.label(text="", icon = "EVENT_B" if item.ITEM_type == "BlockMesh" else "EVENT_S")
-        row.prop(item, "ITEM_name", text="", emboss=False)
-        row.prop(item, "ITEM_location", text="", emboss=True)
-        #row.prop(cs.mfile_item_ptr, "ITEM_history")
+        a.alignment = "CENTER"
+        a.label(text=item.ITEM_project)
+        
+        bspt = b.split(factor=0.298, align=True)
+        b1 = bspt.row(align=True)
+        b2 = bspt.row(align=True)
+        
+        b1.alignment = "CENTER"
+        b1.prop(item, "ITEM_name", text="", emboss=False)
+        
+        b2spt = b2.split(factor=0.85)
+        c1 = b2spt.row(align=True)
+        c2 = b2spt.row(align=True)
+        
+        c1spt = c1.split(factor = 0.357)
+        d1 = c1spt.row(align=True)
+        d2 = c1spt.row(align=True)
+        
+        d1.alignment = "CENTER"
+        d1.prop(item, "ITEM_type", text="", emboss=False)
+        
+        d2.alignment = "EXPAND"
+        d2.prop(item, "ITEM_location", text="", emboss=True)
 
+        c2.alignment = "RIGHT"
+        c2.alert=True
+        c2.operator("vnt.deactivate_mesh_file_item", text="", icon="PANEL_CLOSE").dump_file_id = item.ITEM_identifier
+        
 class VNT_UL_mesh_file_coroner(UIList):
     """Callable class for mesh file coroner"""
     
@@ -25,19 +52,49 @@ class VNT_UL_mesh_file_coroner(UIList):
         row.scale_y = 0.68
  
         row.prop(item, "ITEM_select", text="")
-        row.label(text="", icon = "EVENT_B" if item.ITEM_type == "BlockMesh" else "EVENT_S")
+        row.prop(item, "ITEM_project", text="", emboss=False)
         row.prop(item, "ITEM_name", text="", emboss=False)
-        row.prop(item, "ITEM_location", text="", emboss=True)
+        row.label(text = item.ITEM_location)
 
 class fileitemproperties(PropertyGroup):
     """Property attributes of a file item managed by mesh file manager"""
     ITEM_select : BoolProperty()
     ITEM_index : IntProperty()
     ITEM_type : StringProperty()
+    ITEM_project : StringProperty()
     ITEM_name : StringProperty()
     ITEM_location : StringProperty(subtype="DIR_PATH")
     ITEM_history : StringProperty()
+    ITEM_identifier : StringProperty()
    
+        
+class tutorialitemproperties(PropertyGroup):
+    """Attributes of a tutorial item displayed by the tutorial system menu"""
+    TUT_select : BoolProperty()
+    TUT_index : IntProperty()
+    TUT_type : EnumProperty(items = [('BM', 'Blockmesh', '', "EVENT_B", 0),
+                                     ('SHM', 'Snappyhexmesh', '', "EVENT_S", 1),
+                                     ('SOLVER', 'Solver', '', "RNA", 2),
+                                     ('USAGE', 'Usage', '', "USER", 3),
+                                     ('MISC', 'Miscellaneous', '', "QUESTION", 4)],
+                            default = 'BM')
+    TUT_name : StringProperty()
+    TUT_location : StringProperty(subtype="DIR_PATH")
+    TUT_progress : IntProperty(default=0,
+                               min = 0,
+                               max = 100)
+    TUT_bookmark : BoolProperty()
+    
+    
+class recent_item_properties(PropertyGroup):
+    """Property attributes of a recent item."""
+    REC_select : BoolProperty()
+    REC_index : IntProperty()
+    REC_type : StringProperty()
+    REC_name : StringProperty()
+    REC_location : StringProperty(subtype="DIR_PATH")
+    REC_history : StringProperty()
+  
     
 class CUSTOM_UL_verts(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
@@ -60,9 +117,7 @@ class CUSTOM_UL_verts(UIList):
         
     def invoke(self, context, event):
         pass
-    
-    
-# UIList for Blocks
+
 class CUSTOM_UL_blocks(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         box = layout.box()
@@ -89,8 +144,7 @@ class CUSTOM_UL_blocks(UIList):
         
     def invoke(self, context, event):
         pass
-    
-    
+     
 class CUSTOM_UL_faces(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index): 
         box = layout.box()

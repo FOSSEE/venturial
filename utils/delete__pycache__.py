@@ -17,7 +17,7 @@ try:
     mypath = bpy.utils.script_paths('addons')[0] + "/venturial"
     print("Running as Blender Script.")
     
-except TypeError:
+except (TypeError, ModuleNotFoundError):
     mypath = os.getcwd()
     print("Running as External Script.")
        

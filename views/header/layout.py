@@ -17,7 +17,7 @@ class header_layout:
         row.menu(VNT_MT_file_menu.bl_idname, text="File")
         
         row = layout.row(align = True)
-        row.popover(VNT_PT_uicategory.bl_idname, text=cs.ui_category) 
+        row.popover(VNT_PT_uicategory.bl_idname, text=cs.current_tool_text) 
         
         row = layout.row()        
         row.prop(cs, "mode", icon_only=True, expand = True)

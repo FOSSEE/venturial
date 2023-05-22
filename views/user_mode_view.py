@@ -1,5 +1,5 @@
 from bpy.types import Panel
-from venturial.views.blockmesh.layout import blockmesh_layout
+from venturial.views.mainpanel.layout import mainPanel
 from venturial.views.header.layout import header_layout
 
 class VNT_PT_usermodeview(Panel):
@@ -12,13 +12,11 @@ class VNT_PT_usermodeview(Panel):
     
     def draw_header(self, context):
         layout = self.layout   
-        
         getattr(header_layout(), "draw")(layout, context)
         
     def draw(self, context):
         layout = self.layout
-        
-        getattr(blockmesh_layout(), "draw")(layout, context)
+        getattr(mainPanel(), "draw")(layout, context)
         
         
     

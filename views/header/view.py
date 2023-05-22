@@ -31,13 +31,15 @@ class VNT_MT_file_menu(Menu):
     def draw(self, context):
         layout = self.layout
     
-        layout.operator(VNT_OT_new_mesh_file.bl_idname, text="New Mesh", icon_value=custom_icons["new_mesh_file_2"]["new_mesh_file_2"].icon_id)
-        layout.operator(VNT_OT_build_mesh.bl_idname, text="Build Mesh", icon_value=custom_icons["build_mesh_2"]["build_mesh_2"].icon_id)
-        layout.operator(VNT_OT_import_mesh.bl_idname, text = "Import Mesh", icon="IMPORT")
-        layout.operator(VNT_OT_save_mesh.bl_idname, text = "Save Mesh", icon="PASTEDOWN")
-        layout.separator()
-        layout.operator(VNT_OT_new_case.bl_idname, text = "New Case", icon="NEWFOLDER")
+        layout.operator(VNT_OT_new_case.bl_idname, text = "New", icon="NEWFOLDER")
         layout.operator(VNT_OT_open_case.bl_idname, text = "Open Case", icon="FOLDER_REDIRECT")
+        
+        layout.separator()
+        
+        layout.operator(VNT_OT_build_mesh.bl_idname, text="Build Mesh", icon = "MOD_LINEART")
+        layout.operator(VNT_OT_import_mesh.bl_idname, text = "Import Mesh", icon="IMPORT")
+        #layout.operator(VNT_OT_save_mesh.bl_idname, text = "Save Mesh", icon="PASTEDOWN")
+        
         layout.separator()
         layout.operator(VNT_OT_user_general_settings.bl_idname, text = "Settings", icon="PREFERENCES")
         layout.menu(VNT_MT_dev_menu.bl_idname, text="Development", icon="RNA_ADD")
@@ -56,14 +58,20 @@ class VNT_PT_uicategory(Panel):
         cs = context.scene
         
         row1 = layout.row()
-        row1.operator(VNT_OT_venturial_maintools.bl_idname, text="BlockMesh", depress=True if cs.tool_type == "BlockMesh" else False).maintools = "BlockMesh"
-        row1.operator(VNT_OT_venturial_maintools.bl_idname, text="SnappyHexMesh", depress=True if cs.tool_type == "SnappyHexMesh" else False).maintools = "SnappyHexMesh"
+        r1spt = row1.split(align=True)
+        a = r1spt.row() 
+        b = r1spt.row() 
+        
+        a.enabled = True if cs.meshing_tool == "BlockMesh" else False
+        a.operator(VNT_OT_venturial_maintools.bl_idname, text="BlockMesh", depress=True if cs.meshing_tool != "SnappyHexMesh" else False).maintools = "BlockMesh"
+        b.enabled = True if cs.meshing_tool == "SnappyHexMesh" else False
+        b.operator(VNT_OT_venturial_maintools.bl_idname, text="SnappyHexMesh", depress=True if cs.meshing_tool != "BlockMesh" else False).maintools = "SnappyHexMesh"
         
         row2 = layout.row()
-        row2.operator(VNT_OT_venturial_maintools.bl_idname, text="Simulation", depress=True if cs.tool_type == "Simulation" else False).maintools = "Simulation"
+        row2.operator(VNT_OT_venturial_maintools.bl_idname, text="Solution Modeling").maintools = "Solution Modeling"
         
         row3 = layout.row()
-        row3.operator(VNT_OT_venturial_maintools.bl_idname, text="Post-Processing", depress=True if cs.tool_type == "Post-Processing" else False).maintools = "Post-Processing"
+        row3.operator(VNT_OT_venturial_maintools.bl_idname, text="Post-Processing").maintools = "Post-Processing"
         
 
 class VNT_MT_about_venturial(Menu):

@@ -1,76 +1,57 @@
 from bpy.types import Operator
-from bpy.props import BoolProperty, EnumProperty
+from bpy.props import BoolProperty, EnumProperty, IntProperty, StringProperty
 import bpy, numpy as np, bmesh
+from venturial.utils.custom_icon_object_generator import *
+
+class VNT_OT_location_spawnner(Operator):
+    """Click to see options for cell locations"""
+    bl_label = "Click to see options for cell locations" 
+    bl_idname = "vnt.location_spawnner"
+    bl_description = " "
+
+    options : EnumProperty(items = [("Grid", "Grid", "Generate cells in a grid."),
+                                    ("3D Cursor", "3D Cursor", "Generate cells at the 3D cursor"),
+                                    ("Center", "Center", "Generate cells at the center.")],
+                           default = "Grid")
+    
+    x : IntProperty()
+    y : IntProperty()
+    
+    def execute(self, context):   
+        context.scene.spawn_type = self.options
+        bpy.context.window.cursor_warp(0, 0)
+        bpy.context.window.cursor_warp(self.x, self.y)
+        
+        return {'FINISHED'}
+        
+    def invoke(self, context, event):
+        self.x = event.mouse_x
+        self.y = event.mouse_y
+        
+        return self.execute(context)
 
 class VNT_OT_add_to_viewport(Operator):
     """Add chosen number of cell shape units to the viewport"""
-    
-    bl_label = "Add to Viewport" 
+    bl_label = "Create Cells"
     bl_idname = "vnt.add_to_viewport"
     bl_description = "Add chosen number of cell shape units to the viewport" 
-
-    def summon_hexahedrons(self, context):
-        scn = context.scene
+    
+    # The __init__ method is understood by those who hate if-else statements and long-ass code.
+    # This makes the operator run slower but systematically replicates the first step of block-composition-algorithm.  
+    def __init__(self, spawn_locations=None, cs=None):
+        """initialise all possible spawn locations"""
+        self.cs = bpy.context.scene
+        self.m = int(self.cs.cellShape_units ** 0.5)
+        self.spawn_locations = {"Grid" : [(i % self.m, i // self.m, 0) for i in range(self.cs.cellShape_units)],
+                                "3D Cursor" : [tuple(self.cs.cursor.location) for i in range(self.cs.cellShape_units)],
+                                "Center" : [(0.0, 0.0, 0.0) for i in range(self.cs.cellShape_units)]}
+        self.spawn_object = {"Hexahedron": "spawn_hexahedrons",
+                             "Prisms": "spawn_prisms"}
         
-        for i in range(0, scn.cellShape_units):
-            loc = [np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0)]
-            bpy.ops.mesh.primitive_cube_add(location=loc)
+    def spawn_hexahedrons(self, context, loc):
+        bpy.ops.mesh.primitive_cube_add(size = 1.0, location=loc)
             
-            obj = bpy.context.object
-            bpy.context.object.show_wire = True
-            mat = obj.matrix_world
-                  
-            LV_list = [[-1.0, -1.0, -1.0], 
-                       [1.0, -1.0, -1.0],  
-                       [1.0, 1.0, -1.0], 
-                       [-1.0, 1.0, -1.0], 
-                       [-1.0, -1.0, 1.0], 
-                       [1.0, -1.0, 1.0], 
-                       [1.0, 1.0, 1.0], 
-                       [-1.0, 1.0, 1.0]]    
-                       
-            bpy.ops.object.mode_set(mode='EDIT')
-            
-            bm=bmesh.from_edit_mesh(obj.data)
-            dml_order = [0, 0, 0, 0, 0, 0, 0, 0]
-            v_order = [0, 4, 6, 2, 1, 5, 7, 3]
-            
-            block_origin = []
-            for v in bm.verts:
-                if v.index == 0:
-                    block_origin = list(mat @ v.co)
-                for i in range(0, len(dml_order)):
-                    if list(v.co) == LV_list[i]:
-                        dml_order[i] = list(mat @ v.co)
-            
-            for k in range(0, len(v_order)):
-                
-                item = scn.simblk.add()
-                item.name = obj.name
-                item.index = v_order[k]
-                item.vertptx = dml_order[k][0]
-                item.vertpty = dml_order[k][1]
-                item.vertptz = dml_order[k][2]
-                
-            bpy.ops.object.mode_set(mode='OBJECT')
-            scn.cnt += 1
-            
-            bpy.ops.object.empty_add(type='ARROWS', align='WORLD', location=block_origin, scale=(1, 1, 1))
-            
-            mt = bpy.context.active_object
-            mt.parent = obj
-            mt.parent_type = 'VERTEX'
-            
-            mt.parent_vertices[0] = 0
-            bpy.context.object.location[0] = 0
-            bpy.context.object.location[1] = 0
-            bpy.context.object.location[2] = 0
-            
-            bpy.ops.object.select_all(action='DESELECT')
-            bpy.context.view_layer.objects.active = obj
-            obj.select_set(True)
-            
-    def summon_prisms(self, context):
+    def spawn_prisms(self, context):
         scn = context.scene
         
         bpy.context.scene.tool_settings.snap_elements = {'VERTEX'}
@@ -156,14 +137,53 @@ class VNT_OT_add_to_viewport(Operator):
             for obj in bpy.context.scene.objects:
                 obj.select_set(False)
                 bpy.context.view_layer.objects.active = obj 
+                
+    
+        #return {'RUNNING_MODAL'} 
 
-    def execute(self, context):
+    def draw(self, context):
+        #layout.alignment doesn't work here: probable bug in blender.
         cs = context.scene
-        getattr(self, cs.cellShapes)(context)
-
+        layout = self.layout
+        
+        if cs.spawn_type != "Grid":
+            split = layout.split(factor = 0.32)
+            c1 = split.row()
+            c2 = split.row().column().box()
+            
+            c1.template_icon(icon_value=custom_icons["warning_sign_1"]["warning_sign_1"].icon_id, scale=3)
+            c2.label(text="          This will create multiple cells at " + cs.spawn_type + " ?")
+            c2.label(text="Switch to grid mode to distribute multiple cells in a grid.")
+            
+        else:
+            layout.label(text="                                                       Click OK to proceed.")
+        
+        row1 = layout.row()
+        row1.alignment = "EXPAND"
+        row1.operator(VNT_OT_location_spawnner.bl_idname, text="Grid", depress=True if cs.spawn_type == "Grid" else False).options = "Grid"
+        row1.operator(VNT_OT_location_spawnner.bl_idname, text="3D Cursor", depress=True if cs.spawn_type == "3D Cursor" else False).options = "3D Cursor"
+        row1.operator(VNT_OT_location_spawnner.bl_idname, text="Center", depress=True if cs.spawn_type == "Center" else False).options = "Center"
+        
+    
+    def render_cellShapes(self, context):
+        pass
+    
+    def execute(self, context):
+        """The execute method renders the cell shapes into 3D view"""
+        cs = context.scene
+        for loc in self.spawn_locations[cs.spawn_type]:
+            getattr(self, self.spawn_object[cs.cellShapes])(context, loc)
+        
         return {'FINISHED'} 
     
-    
+    def invoke(self, context, event):
+        # Raise warning dialog box if multiple cells are spawned using 3D cursor or Center spawn type. 
+        if context.scene.cellShape_units > 1 and context.scene.spawn_type != "Grid":
+            return context.window_manager.invoke_props_dialog(self, width=440)
+        # Run execute if cells are drawn with the Grid method
+        else:
+            return self.execute(context)
+
 
 class VNT_OT_compose(Operator):
     """Select Blocks to Join and merge All Overlapping Vertices, Faces and Edges to build Geometry. 
