@@ -83,27 +83,6 @@ Venturial installs like most other Blender-addons. Read more on [Blender addons]
 - It is worth knowing common [Blender shortcuts](https://docs.blender.org/manual/en/latest/interface/keymap/introduction.html).
 
 
-### FAQ:
-
-Q. What is Blender and why use it?
-
-A. [Blender](https://www.blender.org/about/) is an open-sourced GUI based 3D computer graphics software. It provides a python API to manipulate geometric primitives and an integrated toolkit to draw user interface widgets. A collection of such widgets is called a Blender [Addon](https://docs.blender.org/manual/en/latest/advanced/scripting/addon_tutorial.html).  
-
-Q. Do I need to learn Blender to use Venturial?
-
-A. No. Once Venturial is installed, you only need to learn Venturial's usage. It is designed to minimize dependency on Blender. However it is recommended to familiarize yourself with Blender. It is good to know the [basics](https://www.blender.org/support/).
-
-Q. How do I update the new version of Venturial?
-
-A. Updates are important. We will be rolling out new patches and features soon. To install a new version re-do steps 5 - 10. The zip file will be kept updated until beta release or an optional auto-update feature. Keep a single copy of the addon. If you install a new version, then remove the older version from Blender's config. To do this go to Edit >> Preferences >> Addons. In the search bar type ```Venturial```. Press the "Remove" button.
-
-Q. I found a bug or a feature of Venturial is not working. What do I do?
-
-A. Venturial is currently in development so we welcome your issues. You can either create an issue on github or contact us at contact-cfd@fossee.in. We will also incorporate a bug tracker and an integrated feature request tool soon. Once available it can be directly used to report issues.
-
-## Compliance:
-TBD
-
 ## Usage Policy:
 TBD
 
