@@ -1,6 +1,6 @@
 # Venturial: A GUI for OpenFOAM
 
-Venturial, a Blender addon is a GUI application that alleviates the effort to construct OpenFOAM cases.
+Venturial is a Blender addon that alleviates the effort to construct OpenFOAM cases.
 
 1. It provides a homogenous user interface to create geometries and graphically manipulate OpenFOAM dictionary templates.
 2. It uses Blender as a development platform and the blender-python (bpy) API as the primary dependency of Venturial-tools.
