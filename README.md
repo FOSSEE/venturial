@@ -39,3 +39,11 @@ Licensing
 1. Venturial is a free and fully open-sourced software built by the FOSSEE project and licensed under GPL 3.0.
 2. Venturial is not approved or endorsed by OpenLimited, producer and distributor of the OpenFOAM software via www.openfoam.com, and owner of the OPENFOAM® and OpenCFD® trademarks.
 3. Copyright (c) 2023 FOSSEE, CFD-FOSSEE.
+
+Citations
+-----------------------------------------------------
+Venturial is a ongoing project and has several papers associated with it. We publish about recent developments to document essential progress milestones. 
+
+A poster about Venturial was published in the [Proceedings of the 23rd Python in Science Conference] (https://doi.org/10.25080/tpwg2365)
+A short paper about Venturial's development process and history has been published in the [2023 IEEE T4E conference] (https://doi.org/10.5281/zenodo.14162151)
+Venturial was first published in the [18th OpenFOAM Workshop (OFW) 2023] (https://oxford-abstracts.s3.amazonaws.com/83ca7ab4-c356-4411-be07-070eaeffd43a.pdf)
