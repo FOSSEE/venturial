@@ -8,11 +8,16 @@ class mainPanel:
         """Draws the layout of the main panel"""
         
         cs = context.scene
-        var = "Edges" if cs.current_tool_text == "BlockMesh" else "Step Controls"
-        getattr(self, "draw_tool_navigator")(cs.mainpanel_categories, var, layout)
+
+        r1 = layout.row(align=True)
+        r1.prop(cs, "mainpanel_categories", expand=True)
+
+        # var = "Edges" if cs.current_tool_text == "BlockMesh" else "Step Controls"
+        # getattr(self, "draw_tool_navigator")(cs.mainpanel_categories, var, layout)
+
         getattr(layout_controller(cs.mainpanel_categories), "output")(layout, context)
         
-
+    #TODO: Fix this later. Need to change options dynamically for blockMesh and snappyHexMesh
     def draw_tool_navigator(self, x, var, layout):
         """Horizontal tool navigator"""
 

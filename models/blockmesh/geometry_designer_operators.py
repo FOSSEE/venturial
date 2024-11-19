@@ -1,3 +1,5 @@
+# Not included in init.py
+
 from bpy.types import Operator
 from bpy.props import BoolProperty, EnumProperty
 import bpy, numpy as np, bmesh

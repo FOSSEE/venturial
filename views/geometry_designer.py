@@ -1,3 +1,5 @@
+# Not included in init.py
+
 from venturial.models.geometry_designer_operators import *
         
 class geometry_designer:

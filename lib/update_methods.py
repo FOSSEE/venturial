@@ -1,4 +1,4 @@
-import bpy
+import bpy, bmesh
 
 def update_mesh_dict_names(self, context):
     context.scene.bm_dict_name = 'blockMeshDict' if 'BlockMesh' in self.prompt_meshing_tool else ''

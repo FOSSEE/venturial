@@ -1,5 +1,6 @@
 from venturial.models.blockmesh.design_operators import *
 from bpy.types import Panel
+from venturial.views.get_vertices import get_vertices
 
 class blockmesh_menu:
 
@@ -88,6 +89,8 @@ class blockmesh_menu:
         r5c2c1.prop(cs, "cell_z", toggle=True)
         
         r5c2c2.prop(cs, "ctm", slider=True)
+
+        getattr(get_vertices(), "draw")(tools, context)
         
         row6 = tools.row()
         row6.scale_y = 1.3

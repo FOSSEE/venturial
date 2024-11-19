@@ -35,6 +35,7 @@ class VNT_OT_vertex_data_control(Operator):
         for v in vertices:
             if v.select:
                 vert_prop[v.index] = list(np.around(np.array(geo.matrix_world @ v.co), 3))
+                # vert_prop[v.index] = list(np.around(np.array(v.co), 3))
         
         return vert_prop
     
