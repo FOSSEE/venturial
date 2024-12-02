@@ -1,5 +1,5 @@
 from bpy.types import Panel
-from venturial.models.visualizer_operators import VNT_OT_vertex_data_control, VNT_OT_edge_data_control
+from venturial.models.visualizer_operators import VNT_OT_vertex_data_control, VNT_OT_edge_data_control, VNT_OT_boundary_data_control
 
 class visualizer_menu:
     """Methods defining the sections of the blockmesh visualizer tool"""
@@ -148,6 +148,14 @@ class visualizer_menu:
         title = row1.row()
         title.alignment = "CENTER"
         title.label(text= "Boundary")
+        
+        row2 = row1.row()
+        if cs.enable_bound_vis == True:
+            row2.alert = True
+
+        row2.operator(VNT_OT_boundary_data_control.bl_idname, 
+                      text="", 
+                      icon="CHECKMARK" if cs.enable_bound_vis == False else "PANEL_CLOSE")
 
 class VNT_PT_statistics_settings(Panel):
     """A pop-up UI panel for setting geometry statistics"""

@@ -116,7 +116,7 @@ class new_case_prompt:
 
             cs.mfile_item_index = len(cs.mfile_item)-1
                 
-            #getattr(mesh_dictionary_controller(), "dict_initiate")(optr, context)
+            getattr(mesh_dictionary_controller(), "dict_initiate")(optr, context)
 
         else:
             optr.report({'INFO'}, 'Select a directory.')

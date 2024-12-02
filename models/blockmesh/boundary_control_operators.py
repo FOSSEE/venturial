@@ -12,6 +12,125 @@ def face_strtolist(string):
     # Add error handling to avoid errors during parsing
     return [int(s) for s in string[1: -1].split() if s.isdigit()]
 
+class VNT_OT_New_Boundary(Operator):
+    bl_idname = "vnt.new_boundary"
+    bl_label = "New Boundary"
+    bl_description = "Add a new boundary to the list"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def draw(self, context):
+        layout = self.layout
+        cs = context.scene
+        data = cs.face_name
+
+        r1 = layout.row(align=True)
+        r1.label(text="Boundary Name:")
+        r1.prop(data, "facename")
+
+        r2 = layout.row(align=True)
+        r2.label(text="Boundary Condition:")
+        r2.prop(cs, "bdclist")
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=300)
+    
+    def execute(self, context):   
+        scn = context.scene 
+        obj = context.object
+
+        if obj:
+            if obj.mode == 'EDIT':
+                face_check = True
+                bm = bmesh.from_edit_mesh(obj.data)
+                vertices = bm.verts
+                sel_v = [[v.index for v in f.verts]
+                         for f in bm.faces if f.select]
+                for i in sel_v:
+                    if len(i) > 4:
+                        face_check = False
+                        break
+                    elif len(i) == 3:
+                        # i.append(i[-1])
+                        BN = []  # Block Names
+                        for w in scn.simblk:
+                            BN.append(w.name)
+                        seen = set()
+                        result = []
+                        for item in BN:
+                            if item not in seen:
+                                seen.add(item)
+                                result.append(item)
+                        BV = []  # Block Vertices
+                        for j in result:
+                            m = []
+                            for q in range(0, len(scn.simblk)):
+                                if scn.simblk[q].name == j:
+                                    m.append(scn.simblk[q].index)
+                            BV.append(m)
+                        brep_verts = []
+                        for rv in BV:
+                            s = [item for item, count in collections.Counter(
+                                rv).items() if count > 1]
+                            if len(s) > 0:
+                                brep_verts.append(s)
+                        rep_v = []
+                        for j in brep_verts:
+                            for c in j:
+                                rep_v.append(c)
+                        for v in range(0, len(i)):
+                            if i[v] in list(set(rep_v)):
+                                i.insert(v, i[v])
+                                break
+                    else:
+                        pass
+                if face_check == False:
+                    self.report(
+                        {'INFO'}, "A selected Face has more than 4 vertices.")
+                else:
+                    str_fac = []
+                    sel_fac_list = []
+                    for fac in sel_v:
+                        str_fac = []
+                        for i in fac:
+                            str_fac.append(str(i))
+                        M = "("
+                        for j in str_fac:
+                            if j == str_fac[0]:
+                                M = M + "" + j
+                            else:
+                                M = M + " " + j
+                        M = M + ")"
+                        sel_fac_list.append(M)
+                    if not scn.face_name.facename.strip():
+                        self.report(
+                            {'INFO'}, "Name the Face to add to list")
+                    else:
+                        clr = self.get_random_color()
+                        for i in sel_fac_list:
+                            item = scn.fcustom.add()
+                            item.name = i
+                            item.face_des = scn.face_name.facename
+                            item.face_clr = clr
+                            item.face_type = scn.bdclist
+                            # bpy.ops.object.material_slot_add()
+                            mat_clr = bpy.data.materials.new("clr")
+                            mat_clr.diffuse_color = clr
+                            scn.fcustom_index = len(scn.fcustom)-1
+                            info = '"%s" added to list' % (item.name)
+                            self.report({'INFO'}, info)
+                        cfl = [f for f in bm.faces if f.select]
+                        for i in cfl:
+                            i.material_index = 1
+            else:
+                self.report(
+                    {'INFO'}, "Enter Face Select option in Edit Mode")
+
+        return {'FINISHED'}
+    
+    def get_random_color(self):
+        r, g, b = [random.random() for i in range(3)]
+        return r, g, b, 1
+
 
 class VNT_OT_faceactions(Operator):
     bl_idname = "custom.face_action"

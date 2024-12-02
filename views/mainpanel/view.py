@@ -1,12 +1,15 @@
 from venturial.models.header.file_handling_operators import *
 from venturial.models.blockmesh.design_operators import *
 from venturial.models.blockmesh.edge_operators import *
+from venturial.models.blockmesh.boundary_control_operators import *
+from venturial.models.run_panel_operators import *
 from venturial.utils.custom_icon_object_generator import *
 from venturial.views.mainpanel.visualizer import visualizer_menu
 from venturial.views.mainpanel.tutorials import tutorial_menu
 from venturial.views.mainpanel.recents import recents_menu
 from venturial.views.mainpanel.meshing_tools.blockmesh import blockmesh_menu
 from venturial.views.mainpanel.meshing_tools.snappyhexmesh import snappyhexmesh_menu
+
 
 import time, bpy
 
@@ -19,7 +22,8 @@ class layout_controller:
                          "Visualize": "VNT_ST_visualize",
                          "Edges": "VNT_ST_edges",
                          "Step Controls": "VNT_ST_step_controls",
-                         "Run": "VNT_ST_run"}
+                         "Run": "VNT_ST_run",
+                         "Boundary": "VNT_ST_boundary"}
         
     def output(self, layout, context):
         layout = layout.box()
@@ -104,17 +108,21 @@ class layout_controller:
             
             x.scale_y = 1.7 if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else 1.9
             x.scale_x = 0.9730 + len(cs.mfile_item)*(0.009 if len(cs.mfile_item) == 3 else 0.01) if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else 1.0
-            
+    
         r7.ui_units_y = 0.00001
             
         r8 = projects.row(align=True)
         for i in range(0, len(cs.mfile_item)):
             y = r8.column(align=True)
             if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier:
-                y.label(text="")
+                y.label(text="") # Active tab in the view
             else:
                 y.scale_y = 0.8
-                y.box().label(text="")
+                y.box().label(text="") # Passive tabs in the view
+        
+        r10 = projects.row()
+        r10.scale_y = 1.4
+        r10.template_list("CUSTOM_UL_blocks", "", cs, "bcustom", cs, "bcustom_index", rows=2)
                    
     def VNT_ST_visualize(self, layout, context):
         outline = layout.box()
@@ -181,6 +189,55 @@ class layout_controller:
         b.operator(VNT_OT_destroy_edge.bl_idname, icon="TRASH")
         b.alert = False
 
+    def VNT_ST_boundary(self, layout, context):
+        cs = context.scene
+        layout=layout.box()
+        data = cs.face_name
+
+        # r0 = layout.row()
+        # r0.label(text="Boundary Controls")
+
+        r0 = layout.row()
+        r0.prop(cs, "face_sel_mode", toggle=True)
+        
+        r1 = layout.row()
+        r1.operator(VNT_OT_New_Boundary.bl_idname, text="New Boundary")
+
+        # r1 = layout.row()
+        
+        # r1.label(text="Boundary Name:")
+        # r1.prop(data, "facename")
+        
+        # r2 = layout.row()
+        # r2.operator(VNT_OT_set_face_name.bl_idname, text="Set Boundary Name")
+        
+        # r3 = layout.row()
+        # r3.label(text="Boundary Condition")
+        # r3.prop(cs, "bdclist")
+        
+        # r4 = layout.row()
+        # r4.operator(VNT_OT_set_type_face.bl_idname, text="Set Boundary Condition")
+        
+        # r4 = layout.row()
+        # r4.scale_y = 1.4
+        # r4.active_default = True
+        # r4.operator(VNT_OT_faceactions.bl_idname, text="Add Boundary").action = "ADD"
+        # r4.active_default = False
+        
+        # new line
+        r2 = layout.row().grid_flow(row_major=True, columns=4, even_columns=False, align = True)
+        
+        r2.operator(VNT_OT_selectfaces.bl_idname, text="", icon="STICKY_UVS_LOC").select_all = True
+        r2.operator(VNT_OT_selectfaces.bl_idname, text="", icon="STICKY_UVS_DISABLE").select_all = False
+        r2.operator(VNT_OT_faceactions.bl_idname, text="", icon="REMOVE").action = "REMOVE"
+        r2.alert = True
+        r2.operator(VNT_OT_clearfaces.bl_idname, text="", icon="TRASH")
+        r2.alert = True
+
+        r3 = layout.row()
+        r3.scale_y = 1.4
+        r3.template_list("CUSTOM_UL_faces", "", cs, "fcustom", cs, "fcustom_index", rows=2)
+
     def VNT_ST_step_controls(self, layout, context):
         cs = context.scene
         layout = layout.box()
@@ -213,6 +270,19 @@ class layout_controller:
         
         a.box().label(text="Run Utilities")
 
+        sec1 = layout.row(align=True)
+        sec1.scale_y = 1.4
+        sec1.ui_units_y = 2.0
+        sec1.prop(cs, "geo_design_options", expand=True)
+        
+        row = layout.row()
+        row.active_default = True
+        row.operator(VNT_OT_fill_dict_file.bl_idname, icon="FILE_TICK", text="Generate Blockmesh Dictionary")
+        
+        row.active_default = False
+        row.alert = True
+        row.operator(VNT_OT_cleardictfileonly.bl_idname, icon="TRASH", text="Clear Blockmesh Dictionary")
+        row.ui_units_y = 1.7
 
 
 class VNT_OT_active_project_indicator(Operator):

@@ -11,6 +11,10 @@ class VNT_OT_vertactions(Operator):
     action: EnumProperty(items=(('REMOVE', "Remove", ""),
                                 ('ADD', "Add", "")))
 
+    @classmethod
+    def poll(self, context):
+        return bool(context.scene.simblk)
+
     def execute(self, context):
         scn = context.scene
         
@@ -80,7 +84,11 @@ class VNT_OT_add_update_verts(Operator):
     bl_idname = "custom.add_update_verts"
     bl_label = "Get Vertices"
     bl_description = "Add/Update vertices of selected Geometry"
-    #bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(self, context):
+        return bool(context.scene.simblk)
 
     def execute(self, context):
         scn = context.scene

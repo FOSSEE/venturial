@@ -46,97 +46,167 @@ class VNT_OT_add_to_viewport(Operator):
                                 "3D Cursor" : [tuple(self.cs.cursor.location) for i in range(self.cs.cellShape_units)],
                                 "Center" : [(0.0, 0.0, 0.0) for i in range(self.cs.cellShape_units)]}
         self.spawn_object = {"Hexahedron": "spawn_hexahedrons",
-                             "Prisms": "spawn_prisms"}
+                             "Prism": "spawn_prisms"}
         
     def spawn_hexahedrons(self, context, loc):
-        bpy.ops.mesh.primitive_cube_add(size = 1.0, location=loc)
+        # bpy.ops.mesh.primitive_cube_add(size = 1.0, location=loc)
+        
+        scn = context.scene
+
+        bpy.context.scene.tool_settings.snap_elements = {'VERTEX'}
+        bpy.context.scene.tool_settings.use_snap = True
+
+        # loc = [np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0)]
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=loc)
+        
+        obj = bpy.context.object
+        bpy.context.object.show_wire = True
+        mat = obj.matrix_world
+
+              
+        LV_list = [[-0.5, -0.5, -0.5], 
+                   [0.5, -0.5, -0.5],  
+                   [0.5, 0.5, -0.5], 
+                   [-0.5, 0.5, -0.5], 
+                   [-0.5, -0.5, 0.5], 
+                   [0.5, -0.5, 0.5], 
+                   [0.5, 0.5, 0.5], 
+                   [-0.5, 0.5, 0.5]]    
+                   
+        bpy.ops.object.mode_set(mode='EDIT')
+        
+        bm=bmesh.from_edit_mesh(obj.data)
+        dml_order = [0, 0, 0, 0, 0, 0, 0, 0]
+        v_order = [0, 4, 6, 2, 1, 5, 7, 3]
+        bpy.context.tool_settings.mesh_select_mode = (True, False, False)
+        
+        block_origin = []
+        for v in bm.verts:
+            print(f"v:{v}")
+            if v.index == 0:
+                block_origin = list(mat @ v.co)
+
+            print(f"vertex: {np.array(list(v.co))}")
+            for i in range(0, len(dml_order)):
+                if list(np.around(np.array(list(v.co)), 4)) == LV_list[i]:
+                    
+                    dml_order[i] = list(mat @ v.co)
+        
+        for k in range(0, len(v_order)):
             
-    def spawn_prisms(self, context):
+            item = scn.simblk.add()
+            item.name = obj.name
+            item.index = v_order[k]
+            item.vertptx = dml_order[k][0]
+            item.vertpty = dml_order[k][1]
+            item.vertptz = dml_order[k][2]
+            
+        bpy.ops.object.mode_set(mode='OBJECT')
+        scn.cnt += 1
+        
+        bpy.ops.object.empty_add(type='ARROWS', align='WORLD', location=block_origin, scale=(1, 1, 1))
+        
+        mt = bpy.context.active_object
+        mt.parent = obj
+        mt.parent_type = 'VERTEX'
+        
+        mt.parent_vertices[0] = 0
+        bpy.context.object.location[0] = 0
+        bpy.context.object.location[1] = 0
+        bpy.context.object.location[2] = 0
+        
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+            
+    def spawn_prisms(self, context, loc): #TODO: Fix the count of prisms
         scn = context.scene
         
         bpy.context.scene.tool_settings.snap_elements = {'VERTEX'}
         bpy.context.scene.tool_settings.use_snap = True
         
-        for i in range(0, scn.cellShape_units):
-            loc = [np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0)]
-            bpy.ops.mesh.primitive_cylinder_add(vertices=3, enter_editmode=False, align='WORLD', location=loc, scale=(1, 1, 1))
+        
+            # loc = [np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0), np.random.uniform(-i*2.0, i*2.0)]
+        bpy.ops.mesh.primitive_cylinder_add(vertices=3, enter_editmode=False, align='WORLD', location=loc, scale=(1, 1, 1))
     
-            obj = bpy.context.object
-            #obj.name = "Prism"
-            bpy.context.object.show_wire = True
-            mat = obj.matrix_world
-            bpy.ops.object.mode_set(mode='EDIT')
-            
-            bm=bmesh.from_edit_mesh(obj.data)
-            bpy.context.tool_settings.mesh_select_mode = (False, False, True)
-            
-            for e in bm.faces:
-                if e.index == 1:
-                    e.select = True
-                    
-                else:
-                    e.select = False
-            
-            bpy.ops.transform.resize(value=(0.2, 1, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(True, False, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-            
-            bpy.ops.object.mode_set(mode='OBJECT')
-            
-            #ordering of vertices for 6V block = 0, 3, 5, 1, 2, 4, 4, 2
-            #Vertex number 2 and 4 are repeated
-            LV_list = [[-0.1732, -0.5, -1.0], #4
-                       [0.1732, -0.5, -1.0],  #2
-                       [0.0, 1.0, -1.0],   #0
-                       [0.0, 1.0, -1.0],  #0
-                       [-0.1732, -0.5, 1.0],  #5
-                       [0.1732, -0.5, 1.0],   #3
-                       [0.0, 1.0, 1.0],   #1
-                       [0.0, 1.0, 1.0]]  #1
-                       
-            bpy.ops.object.mode_set(mode='EDIT')
-            
-            bm=bmesh.from_edit_mesh(obj.data)
-            dml_order = [0, 0, 0, 0, 0, 0, 0, 0]
-            v_order = [4, 2, 0, 0, 5, 3, 1, 1]
-            bpy.context.tool_settings.mesh_select_mode = (True, False, False)
-            
-            block_origin = []
-            for v in bm.verts:
-                if v.index == 4:
-                    block_origin = list(mat @ v.co)
-                for i in range(0, len(dml_order)):
-                    if list(np.around(np.array(list(v.co)), 4)) == LV_list[i]:
-                        dml_order[i] = list(mat @ v.co)
-            
-            for k in range(0, len(v_order)):
+        obj = bpy.context.object
+        #obj.name = "Prism"
+        bpy.context.object.show_wire = True
+        mat = obj.matrix_world
+
+        bpy.ops.object.mode_set(mode='EDIT')
+        
+        bm=bmesh.from_edit_mesh(obj.data)
+        bpy.context.tool_settings.mesh_select_mode = (False, False, True)
+        
+        for e in bm.faces:
+            if e.index == 1:
+                e.select = True
                 
-                item = scn.simblk.add()
-                item.name = obj.name
-                item.index = v_order[k]
-                item.vertptx = dml_order[k][0]
-                item.vertpty = dml_order[k][1]
-                item.vertptz = dml_order[k][2]
+            else:
+                e.select = False
+        
+        bpy.ops.transform.resize(value=(0.2, 1, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(True, False, False), mirror=True, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+        
+        bpy.ops.object.mode_set(mode='OBJECT')
+        
+        #ordering of vertices for 6V block = 0, 3, 5, 1, 2, 4, 4, 2
+        #Vertex number 2 and 4 are repeated
+        LV_list = [[-0.1732, -0.5, -1.0], #4
+                   [0.1732, -0.5, -1.0],  #2
+                   [0.0, 1.0, -1.0],   #0
+                   [0.0, 1.0, -1.0],  #0
+                   [-0.1732, -0.5, 1.0],  #5
+                   [0.1732, -0.5, 1.0],   #3
+                   [0.0, 1.0, 1.0],   #1
+                   [0.0, 1.0, 1.0]]  #1
+                   
+        bpy.ops.object.mode_set(mode='EDIT')
+        
+        bm=bmesh.from_edit_mesh(obj.data)
+        dml_order = [0, 0, 0, 0, 0, 0, 0, 0]
+        v_order = [4, 2, 0, 0, 5, 3, 1, 1]
+        bpy.context.tool_settings.mesh_select_mode = (True, False, False)
+        
+        block_origin = []
+        for v in bm.verts:
+            if v.index == 4:
                 
-            bpy.ops.object.mode_set(mode='OBJECT')
-            scn.cnt += 1
+                block_origin = list(mat @ v.co)
+            for i in range(0, len(dml_order)):
+                if list(np.around(np.array(list(v.co)), 4)) == LV_list[i]:
+                    dml_order[i] = list(mat @ v.co)
+        
+        for k in range(0, len(v_order)):
             
-            bpy.ops.object.empty_add(type='ARROWS', align='WORLD', location=block_origin, scale=(1, 1, 1))
+            item = scn.simblk.add()
+            item.name = obj.name
+            item.index = v_order[k]
+            item.vertptx = dml_order[k][0]
+            item.vertpty = dml_order[k][1]
+            item.vertptz = dml_order[k][2]
             
-            mt = bpy.context.active_object
-            mt.parent = obj
-            mt.parent_type = 'VERTEX'
-            
-            mt.parent_vertices[0] = 4
-            bpy.context.object.location[0] = 0
-            bpy.context.object.location[1] = 0
-            bpy.context.object.location[2] = 0
-            
-            bpy.ops.object.select_all(action='DESELECT')
-            bpy.context.view_layer.objects.active = obj
-            obj.select_set(True)
-            
-            for obj in bpy.context.scene.objects:
-                obj.select_set(False)
-                bpy.context.view_layer.objects.active = obj 
+        bpy.ops.object.mode_set(mode='OBJECT')
+        scn.cnt += 1
+        
+        bpy.ops.object.empty_add(type='ARROWS', align='WORLD', location=block_origin, scale=(1, 1, 1))
+        
+        mt = bpy.context.active_object
+        mt.parent = obj
+        mt.parent_type = 'VERTEX'
+        
+        mt.parent_vertices[0] = 4
+        bpy.context.object.location[0] = 0
+        bpy.context.object.location[1] = 0
+        bpy.context.object.location[2] = 0
+        
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = obj
+        obj.select_set(True)
+        
+        for obj in bpy.context.scene.objects:
+            obj.select_set(False)
+            bpy.context.view_layer.objects.active = obj 
                 
     
         #return {'RUNNING_MODAL'} 
@@ -360,6 +430,9 @@ class VNT_OT_get_blocks(Operator):
     @classmethod
     def poll(cls, context):
         return bool(context.scene.simblk)
+    
+    def calc_vertices(self, context):
+        pass
 
     def execute(self, context):
         
