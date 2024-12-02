@@ -89,6 +89,7 @@ class VNT_OT_add_to_viewport(Operator):
             print(f"vertex: {np.array(list(v.co))}")
             for i in range(0, len(dml_order)):
                 if list(np.around(np.array(list(v.co)), 4)) == LV_list[i]:
+                    
                     dml_order[i] = list(mat @ v.co)
         
         for k in range(0, len(v_order)):
@@ -170,6 +171,7 @@ class VNT_OT_add_to_viewport(Operator):
         block_origin = []
         for v in bm.verts:
             if v.index == 4:
+                
                 block_origin = list(mat @ v.co)
             for i in range(0, len(dml_order)):
                 if list(np.around(np.array(list(v.co)), 4)) == LV_list[i]:

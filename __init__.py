@@ -44,6 +44,7 @@ from venturial.models.blockmesh.design_operators import *
 from venturial.models.visualizer_operators import (
     VNT_OT_vertex_data_control,
     VNT_OT_edge_data_control,
+    VNT_OT_boundary_data_control,
 )
 from venturial.models.blockmesh.edge_operators import *
 from venturial.models.tutorials_menu_operators import *
@@ -148,6 +149,7 @@ classes = (
     VNT_OT_select_unselect_allblocks,
     VNT_OT_vertex_data_control,
     VNT_OT_edge_data_control,
+    VNT_OT_boundary_data_control,
     VNT_OT_generate_edge,
     VNT_OT_edit_edge,
     VNT_OT_destroy_edge,
@@ -456,6 +458,7 @@ def register():
 
     bpy.types.Scene.enable_vert_vis = BoolProperty(name="")
     bpy.types.Scene.enable_edge_vis = BoolProperty(name="")
+    bpy.types.Scene.enable_bound_vis = BoolProperty(name="")
 
     bpy.types.Scene.vert_order = BoolProperty(name="")
 

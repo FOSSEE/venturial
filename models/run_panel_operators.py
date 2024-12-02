@@ -22,7 +22,7 @@ def write_dict(m, out_fp):
     blockdict.append(r"/*--------------------------------*- C++ -*----------------------------------*\\")
     blockdict.append(r"| =========                 |                                                 |")
     blockdict.append(r"| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |")
-    blockdict.append(r"|  \\    /   O peration     | Version:  7                                     |")
+    blockdict.append(r"|  \\    /   O peration     | Version:  9                                     |")
     blockdict.append(r"|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |")
     blockdict.append(r"|    \\/     M anipulation  |                                                 |")
     blockdict.append(r"\*---------------------------------------------------------------------------*/")
