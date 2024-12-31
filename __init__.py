@@ -46,7 +46,7 @@ from venturial.models.visualizer_operators import (
     VNT_OT_edge_data_control,
     VNT_OT_boundary_data_control,
 )
-from venturial.models.blockmesh.edge_operators import *
+# from venturial.models.blockmesh.edge_operators import *
 from venturial.models.tutorials_menu_operators import *
 
 # from venturial.models.geometry_designer_operators import *
@@ -74,7 +74,9 @@ from venturial.utils.custom_icon_object_generator import (
 
 from venturial.lib.update_methods import *
 from venturial.lib.preferences_properties import VNT_user_preferences_collection
-from venturial.lib.global_properties import VNT_global_properties_collection
+from venturial.lib.global_properties import VNT_global_properties_collection, VNT_global_properties_collection_edge_verts, CUSTOM_LocProps
+
+from venturial.models.edges_panel_operators import *
 
 classes = (
     VNT_user_preferences_collection,
@@ -118,11 +120,15 @@ classes = (
     VNT_MT_about_venturial,
     VNT_MT_about_fossee,
     VNT_MT_help_menu,
+    CUSTOM_LocProps,
+    VNT_global_properties_collection_edge_verts,
     VNT_global_properties_collection,
     VNT_UL_mesh_file_manager,
     VNT_UL_mesh_file_coroner,
     CUSTOM_UL_blocks,
     CUSTOM_UL_faces,
+    CUSTOM_UL_edges_Main,
+    CUSTOM_UL_edges_Sub,
     VNT_OT_faceactions,
     VNT_OT_set_face_name,
     VNT_OT_set_type_face,
@@ -150,14 +156,19 @@ classes = (
     VNT_OT_vertex_data_control,
     VNT_OT_edge_data_control,
     VNT_OT_boundary_data_control,
-    VNT_OT_generate_edge,
-    VNT_OT_edit_edge,
-    VNT_OT_destroy_edge,
+    # VNT_OT_generate_edge,
+    # VNT_OT_edit_edge,
+    # VNT_OT_destroy_edge,
     VNT_OT_more_tutorials_viewer,
     VNT_OT_tutorial_viewer,
     VNT_PT_filter_tutorials,
     VNT_PT_filter_recents,
     VNT_OT_active_project_indicator,
+    OBJECT_OT_add_single_vertex,
+    VNT_OT_new_edge,
+    VNT_OT_new_vert,
+    VNT_OT_remove_edge,
+    VNT_OT_remove_vert,
 )
 
 
@@ -342,6 +353,16 @@ def register():
     bpy.types.Scene.fcustom = CollectionProperty(type=VNT_global_properties_collection)
     bpy.types.Scene.fcustom_index = IntProperty()
 
+    bpy.types.Scene.ecustom = CollectionProperty(type=VNT_global_properties_collection_edge_verts)
+    bpy.types.Scene.ecustom_index = IntProperty()
+
+    bpy.types.Scene.vert_index = IntProperty(name="Vertex Index", default=0)
+
+    # Temporary Vertex Properties. To be changed later
+    bpy.types.Scene.vertx = FloatProperty(name="X", default=0.0)
+    bpy.types.Scene.verty = FloatProperty(name="Y", default=0.0)
+    bpy.types.Scene.vertz = FloatProperty(name="Z", default=0.0)
+
     bpy.types.Scene.edge_control_methods = EnumProperty(
         items=[("IP", "Interpolation Points", ""), ("AA", "Axis angle", "")],
         default="IP",
@@ -349,10 +370,10 @@ def register():
 
     bpy.types.Scene.curve_type = EnumProperty(
         items=[
-            ("ARC", "Arc", "", "SPHERECURVE", 0),
-            ("POLYLINE", "Polyline", "", "LINCURVE", 1),
-            ("SPLINE", "Spline", "", "SMOOTHCURVE", 2),
-            ("BSPLINE", "Bspline", "", "ROOTCURVE", 3),
+            ("ARC", "Arc", "Arc type of edge"),
+            ("PLY", "Polyline", "Polyline type of edge"),
+            ("SPL", "Spline", "Spline type of edge"),
+            ("BSPL", "BSpline", "BSpline type of edge"),
         ],
         default="ARC",
     )
@@ -403,16 +424,6 @@ def register():
         min=1,
         max=30,
         default=1,
-    )
-
-    bpy.types.Scene.edgelist = EnumProperty(
-        description="Type of Edge (pre-defined)",
-        items=[
-            ("arc", "arc", "", "SPHERECURVE", 0),
-            ("polyLine", "polyLine", "", "LINCURVE", 1),
-            ("spline", "spline", "", "SMOOTHCURVE", 2),
-            ("BSpline", "BSpline", "", "ROOTCURVE", 3),
-        ],
     )
 
     bpy.types.Scene.face_sel_mode = BoolProperty(default=False, update=update_face_mode)
@@ -554,6 +565,12 @@ def unregister():
     del bpy.types.Scene.vcustom_index
     del bpy.types.Scene.fcustom
     del bpy.types.Scene.fcustom_index
+    del bpy.types.Scene.ecustom
+    del bpy.types.Scene.ecustom_index
+    del bpy.types.Scene.vert_index
+    del bpy.types.Scene.vertx
+    del bpy.types.Scene.verty
+    del bpy.types.Scene.vertz
     del bpy.types.Scene.cnt
     del bpy.types.Scene.mode
     del bpy.types.Scene.bdclist

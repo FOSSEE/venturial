@@ -26,7 +26,7 @@ class VNT_OT_generate_edge(Operator):
        
     def generate_polyline(self, context, obj):
         print("generate polyline")
-        
+         
     def generate_spline(self, context, obj):
         print("generate spline")
         
