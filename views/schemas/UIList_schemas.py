@@ -1,3 +1,4 @@
+import bpy
 from bpy.types import (UIList, PropertyGroup)
 from bpy.props import StringProperty, BoolProperty, IntProperty, EnumProperty
 #from venturial.models.header.file_handling_operators import VNT_OT_deactivate_mesh_file_item
@@ -164,7 +165,8 @@ class CUSTOM_UL_faces(UIList):
    
     def invoke(self, context, event):
         pass
-    
+
+'''
 class CUSTOM_UL_edges(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         split = layout.row()
@@ -174,5 +176,24 @@ class CUSTOM_UL_edges(UIList):
         split.prop(item, "intptz", text="", emboss=True, translate=False)
         split.prop(item, "enabled", text="", index=index)
         
+    def invoke(self, context, event):
+        pass
+'''
+
+class CUSTOM_UL_edges_Main(UIList):
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        row = layout.row()
+        row.label(text=f"Edge {index}")
+        row.prop(item, "edge_type", text="")
+    
+    def invoke(self, context, event):
+        pass
+
+class CUSTOM_UL_edges_Sub(UIList):
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        sr = f"{context.scene.ecustom[context.scene.ecustom_index].name}0{index+1}"
+        ob = bpy.data.objects[sr]
+        layout.prop(ob, 'location')
+
     def invoke(self, context, event):
         pass

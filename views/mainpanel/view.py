@@ -1,6 +1,6 @@
 from venturial.models.header.file_handling_operators import *
 from venturial.models.blockmesh.design_operators import *
-from venturial.models.blockmesh.edge_operators import *
+# from venturial.models.blockmesh.edge_operators import *
 from venturial.models.blockmesh.boundary_control_operators import *
 from venturial.models.run_panel_operators import *
 from venturial.utils.custom_icon_object_generator import *
@@ -9,7 +9,9 @@ from venturial.views.mainpanel.tutorials import tutorial_menu
 from venturial.views.mainpanel.recents import recents_menu
 from venturial.views.mainpanel.meshing_tools.blockmesh import blockmesh_menu
 from venturial.views.mainpanel.meshing_tools.snappyhexmesh import snappyhexmesh_menu
+from venturial.models.edges_panel_operators import *
 
+import blf
 
 import time, bpy
 
@@ -147,7 +149,7 @@ class layout_controller:
         getattr(visualizer_menu(), "edge_visualizer")(edge_outline, context)
         getattr(visualizer_menu(), "boundary_visualizer")(boundary_outline, context)
       
-    def VNT_ST_edges(self, layout, context):
+    def VNT_ST_edges_old(self, layout, context):
         cs = context.scene
         layout = layout.box()
         
@@ -189,6 +191,75 @@ class layout_controller:
         b.operator(VNT_OT_destroy_edge.bl_idname, icon="TRASH")
         b.alert = False
 
+    def VNT_ST_edges(self, layout, context):
+        '''
+        Code for the edge tab in the addon tab
+        '''
+
+        vert_ = None
+
+        def draw_loc(context):
+            """
+            Draws the location of the selected vertex
+            """
+            cs = context.scene
+            if vert_ != None:
+                print("removed")
+                bpy.types.SpaceView3D.draw_handler_remove(vert_, 'WINDOW')
+            
+            if len(cs.ecustom) and vert_ == None:
+                idx = cs.ecustom_index
+                idx_v = len(cs.ecustom[idx].vert_collection)
+
+                if idx_v >= 1:
+                    a = bpy.data.objects[f"{cs.ecustom[idx].name}0{(idx_v//2)+1}"].location
+    
+        # def draw_vertex_properties(context, idx, a):
+        #     text_pos = view3d.location_3d_to_region_2d(context.region, context.space_data.region_3d, a)
+        #     blf.position(0, text_pos[0], text_pos[1], 0)
+        #     blf.size(0, 50, 50)
+        #     blf.color(0,255,255,255,125)
+        #     blf.draw(0, f"Spline{idx}")
+
+        cs = context.scene
+        ec = cs.ecustom
+        min_rows = 3
+        row = layout.row()
+
+        split = layout.split(factor=0.2)
+        split.template_list("CUSTOM_UL_edges_Main","", cs, "ecustom", cs, "ecustom_index", rows=min_rows)
+        
+        if len(ec) > 0 and cs.ecustom_index != -1:
+            user = ec[cs.ecustom_index]
+            split.template_list(
+                listtype_name = "CUSTOM_UL_edges_Sub",
+                list_id = "",
+                dataptr = user,
+                propname = "vert_collection",
+                active_dataptr = cs,
+                active_propname = "ecustom_index",
+                rows = min_rows
+            )
+        
+        row1 = layout.row()
+        draw_p(self, context)
+        row1.operator('vnt.new_edge')
+        row1.prop(cs, "curve_type")
+        row1.operator('vnt.remove_edge')
+        row2 = layout.row()
+        row2.operator('vnt.new_vert')
+        row2.operator('vnt.remove_vert')
+        row3 = layout.row(align=True)
+        row3.label(text="Vertex Coordinates")
+        row3.prop(cs, "vertx")
+        row3.prop(cs, "verty")
+        row3.prop(cs, "vertz")
+
+        if len(ec):
+            layout.prop(ec[cs.ecustom_index], "color")
+            layout.prop(ec[cs.ecustom_index], "size")
+            draw_loc(context)
+    
     def VNT_ST_boundary(self, layout, context):
         cs = context.scene
         layout=layout.box()
