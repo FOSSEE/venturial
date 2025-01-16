@@ -59,85 +59,174 @@ def generate_catmull_rom_curve(resolution, points):
 
     return curve_points
 
+def generate_arc_curve_og(resolution, points):
+    
+    if len(points) != 3:
+        raise ValueError("Exactly 3 points are required for Arc interpolation.")
+
+    print(f"points ----------> {points}")
+    A = np.array(points[0]) # end point
+    B = np.array(points[1]) # handler point
+    C = np.array(points[2]) # end point
+
+    def mod(v):
+        return np.sqrt(v[0]**2 + v[1]**2 + v[2]**2)
+
+    u1 = (B-A)
+
+    u = u1/mod(u1)
+
+    w1 = np.cross(C-A, u1)
+
+    w = w1/mod(w1)
+
+    v = np.cross(w,u)
+
+    b = (np.dot(B-A, u), 0)
+
+    c = (np.dot(C-A, u), np.dot(C-A, v))
+
+    h = ( (c[0] - b[0]/2)**2 + c[1]**2 - (b[0]/2)**2 ) / ( 2 * c[1] )
+
+    Cn = A + ((b[0]/2) * u ) + (h * v) # center of the circle
+
+    r = mod(Cn - A) # Radius of the circle
+
+    axis = np.cross((B-A)/mod(B-A), (C-A)/mod(C-A))
+    a = u
+    b = np.cross(axis, a)
+
+    def arc_point(t, c, a, b, r):
+        return (
+            c[0] + r*np.cos(t)*a[0] + r*np.sin(t)*b[0],
+            c[1] + r*np.cos(t)*a[1] + r*np.sin(t)*b[1],
+            c[2] + r*np.cos(t)*a[2] + r*np.sin(t)*b[2]
+        )
+    
+    def get_arc_param(p, c, a, b, r):
+        k = (p[0] - c[0]) / r
+        R = np.sqrt(a[0]**2 + b[0]**2)
+        phi = np.arctan2(b[0], a[0])
+        t = np.arcsin(k / R) - phi
+
+        return t
+    
+    t1 = get_arc_param(A, Cn, a, b, r)
+    t2 = get_arc_param(C, Cn, a, b, r)
+
+    e2 = 0
+    e1 = 0
+    if t2>t1:
+        e2 = t2
+        e1 = t1
+    else:
+        e2 = t1
+        e1 = t2
+
+    d = (e2 - e1) / resolution
+
+    curve_points = []
+    i = e1
+    while i <= e2:
+        curve_points.append(arc_point(i, Cn, a, b, r))
+        i += d
+    
+    print("Completed ARC Generation")
+    print(f"curve_points ----------> {curve_points}")
+    
+    return curve_points
+
 def generate_arc_curve(resolution, points):
+    if len(points) != 3:
+        raise ValueError("Exactly 3 points are required for Arc interpolation.")
+
+    # Extract points
+    A = np.array(points[0])  # Start point
+    B = np.array(points[1])  # Control point
+    C = np.array(points[2])  # End point
+
+    def normalize(v):
+        return v / np.linalg.norm(v)
+
+    # Basis vectors
+    u = normalize(B - A)
+    w = normalize(np.cross(C - A, B - A))
+    v = np.cross(w, u)
+
+    # Calculate intermediate parameters
+    b_u = np.dot(B - A, u)
+    c_u = np.dot(C - A, u)
+    c_v = np.dot(C - A, v)
+
+    # Compute circle center and radius
+    h = ((c_u - b_u / 2) ** 2 + c_v ** 2 - (b_u / 2) ** 2) / (2 * c_v)
+    Cn = A + (b_u / 2) * u + h * v
+    r = np.linalg.norm(Cn - A)
+
+    # Calculate angle parameters for the arc
+    def get_arc_param(p):
+        dp = p - Cn
+        return np.arctan2(np.dot(dp, v), np.dot(dp, u))
+
+    t1 = get_arc_param(A)
+    t2 = get_arc_param(C)
+
+    # Ensure angles are ordered correctly
+    if t2 < t1:
+        t1, t2 = t2, t1
+
+    # Generate arc points
+    t_values = np.linspace(t1, t2, resolution)
+    curve_points = [
+        (Cn + r * np.cos(t) * u + r * np.sin(t) * v).tolist()
+        for t in t_values
+    ]
+
+    return curve_points
+
+def generate_bspline_curve(resolution, verts):
     """
-    Generate points representing an arc of a circle passing through three points in 3D space.
+    Generate a B-spline curve from given control points.
 
     Parameters:
-    p1: tuple of floats (x1, y1, z1) - First fixed point.
-    p2: tuple of floats (x2, y2, z2) - Control point.
-    p3: tuple of floats (x3, y3, z3) - Second fixed point.
-    resolution: int - Number of points in the output arc.
+        resolution (int): Number of points to generate on the B-spline curve.
+        verts (list of list/tuple): Control points (at least 3 points).
+            verts[0] and verts[-1] are endpoints, and verts[1:-1] are control points.
 
     Returns:
-    List of tuples representing points on the arc.
+        list: List of points forming the B-spline curve.
     """
-    # Convert points to numpy arrays
-    p1 = np.array(points[0])
-    p2 = np.array(points[1])
-    p3 = np.array(points[2])
+    if len(verts) < 3:
+        raise ValueError("At least 3 control points are required to generate a B-spline.")
 
-    # Find the plane normal
-    v1 = p2 - p1
-    v2 = p3 - p1
-    normal = np.cross(v1, v2)
-    normal = normal / np.linalg.norm(normal)
+    # Define the B-spline basis matrix
+    basis_matrix = np.array([
+        [-1,  3, -3,  1],
+        [ 3, -6,  3,  0],
+        [-3,  0,  3,  0],
+        [ 1,  4,  1,  0]
+    ]) / 6.0
 
-    # Calculate the circle center and radius
-    def find_circle_center(p1, p2, p3):
-        mid1 = (p1 + p2) / 2
-        mid2 = (p2 + p3) / 2
+    # Ensure verts is a numpy array
+    verts = np.array(verts)
 
-        normal1 = np.cross(p2 - p1, normal)
-        normal2 = np.cross(p3 - p2, normal)
+    # Add extra points at the start and end to handle endpoints properly
+    extended_verts = np.vstack([verts[0], verts, verts[-1]])
 
-        # Set up linear equations to solve for center
-        A = np.array([normal1, -normal2])
-        b = np.array([np.dot(normal1, mid1), np.dot(normal2, mid2)])
+    # Initialize result list
+    bspline_points = [verts[0]]
 
-        try:
-            center = np.linalg.lstsq(A.T, b, rcond=None)[0]
-        except np.linalg.LinAlgError:
-            raise ValueError("The points do not define a unique circle.")
-        return center
+    # Iterate through the segments formed by control points
+    for i in range(len(extended_verts) - 3):
+        # Extract 4 control points for the current segment
+        P = extended_verts[i:i+4]
 
-    center = find_circle_center(p1, p2, p3)
-    radius = np.linalg.norm(p1 - center)
+        # Generate points for the current segment
+        for j in range(resolution):
+            t = j / (resolution - 1)  # Parameter t in [0, 1]
+            T = np.array([t**3, t**2, t, 1])
+            point = T @ basis_matrix @ P
+            bspline_points.append(point)
 
-    # Generate points on the arc
-    def angle_between(v1, v2):
-        """Calculate the angle between two vectors."""
-        v1_u = v1 / np.linalg.norm(v1)
-        v2_u = v2 / np.linalg.norm(v2)
-        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
-
-    v_start = p1 - center
-    v_end = p3 - center
-
-    theta_start = 0
-    theta_end = angle_between(v_start, v_end)
-
-    # Determine direction of rotation
-    if np.dot(np.cross(v_start, v_end), normal) < 0:
-        theta_end = -theta_end
-
-    theta = np.linspace(theta_start, theta_end, resolution)
-
-    arc_points = []
-    for t in theta:
-        point = (center + np.cos(t) * v_start + np.sin(t) * np.cross(normal, v_start))
-        arc_points.append(tuple(point))
-
-    return arc_points
-
-
-# Example usage
-# interpolation_points = [
-#     (0.0, 0.0, 0.0),
-#     (1.0, 2.0, 0.0),
-#     (4.0, 2.0, 0.0),
-#     (7.0, 0.0, 0.0)
-# ]
-# resolution = 10
-# curve = generate_catmull_rom_curve(resolution, interpolation_points)
-# print(curve)
+    bspline_points.append(verts[-1])
+    return bspline_points

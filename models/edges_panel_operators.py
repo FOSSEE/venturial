@@ -279,17 +279,19 @@ def draw_p(self, context):
         # print(f"------> {cs.ecustom[i].edge_type}")
         curve_p = []
 
-        ''' # This Piece of code is to be implemented when there is point generating alorithms for each edge type
+        # This Piece of code is to be implemented when there is point generating alorithms for each edge type
         if cs.ecustom[i].edge_type == 'SPL':
-            print("Using Splien Gen")
+            print("Using Spline Gen")
             curve_p = generate_catmull_rom_curve(100, verts[i])
         elif cs.ecustom[i].edge_type == 'ARC':
             print("Using ARC Gen")
-            curve_p = generate_catmull_rom_curve(100, verts[i])
-        else:
-            print("Edge type yet to implement")
-        '''
-        curve_p = generate_catmull_rom_curve(100, verts[i]) # To be replaced with previous code block once all spline generating algorithms are implemented 
+            curve_p = generate_arc_curve(100, verts[i])
+        elif cs.ecustom[i].edge_type == 'PLY':
+            curve_p = verts[i]
+        elif cs.ecustom[i].edge_type == 'BSPL':
+            curve_p = generate_bspline_curve(100, verts[i])
+        
+        # curve_p = generate_catmull_rom_curve(100, verts[i]) # To be replaced with previous code block once all spline generating algorithms are implemented 
 
         # print(f"------> {catmull_p}")
 
@@ -298,18 +300,32 @@ def draw_p(self, context):
         # verts[i] = [i for i in catmull_p(lin)]
         verts[i] = curve_p
 
-        a[i] = bpy.types.SpaceView3D.draw_handler_add(draw1, ((verts[i], i)), 'WINDOW', 'POST_VIEW')
+        a[i] = bpy.types.SpaceView3D.draw_handler_add(draw_edge_viewport, ((verts[i], i)), 'WINDOW', 'POST_VIEW')
 
-def draw1(verts, index):
+def draw_edge_viewport(verts, index):
     try:
         curr_spline = bpy.context.scene.ecustom[index]
     except Exception as e:
         return
     
     shader = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
-    bgl.glLineWidth(curr_spline.size)
+    # bgl.glLineWidth(curr_spline.size)
+
     col = (curr_spline.color[0], curr_spline.color[1], curr_spline.color[2], curr_spline.color[3])
+
     batch = batch_for_shader(shader, 'LINE_STRIP', {'pos': verts})
+
+    gpu.state.depth_test_set("LESS_EQUAL")
+
+    gpu.state.blend_set("ALPHA")
+    gpu.state.face_culling_set("BACK")
+
     shader.bind()
+    
     shader.uniform_float('color', col)
+    
     batch.draw(shader)
+
+    gpu.state.blend_set("NONE")
+    gpu.state.face_culling_set("NONE")
+    gpu.state.depth_test_set("NONE")
