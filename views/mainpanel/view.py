@@ -262,17 +262,17 @@ class layout_controller:
     
     def VNT_ST_boundary(self, layout, context):
         cs = context.scene
-        layout=layout.box()
+        box_1=layout.box()
         data = cs.face_name
 
         # r0 = layout.row()
         # r0.label(text="Boundary Controls")
 
-        r0 = layout.row()
-        r0.prop(cs, "face_sel_mode", toggle=True)
+        b1r0 = box_1.row()
+        b1r0.prop(cs, "face_sel_mode", toggle=True)
         
-        r1 = layout.row()
-        r1.operator(VNT_OT_New_Boundary.bl_idname, text="New Boundary")
+        b1r1 = box_1.row()
+        b1r1.operator(VNT_OT_New_Boundary.bl_idname, text="New Boundary")
 
         # r1 = layout.row()
         
@@ -296,18 +296,30 @@ class layout_controller:
         # r4.active_default = False
         
         # new line
-        r2 = layout.row().grid_flow(row_major=True, columns=4, even_columns=False, align = True)
+        b1r2 = box_1.row().grid_flow(row_major=True, columns=4, even_columns=False, align = True)
         
-        r2.operator(VNT_OT_selectfaces.bl_idname, text="", icon="STICKY_UVS_LOC").select_all = True
-        r2.operator(VNT_OT_selectfaces.bl_idname, text="", icon="STICKY_UVS_DISABLE").select_all = False
-        r2.operator(VNT_OT_faceactions.bl_idname, text="", icon="REMOVE").action = "REMOVE"
-        r2.alert = True
-        r2.operator(VNT_OT_clearfaces.bl_idname, text="", icon="TRASH")
-        r2.alert = True
+        b1r2.operator(VNT_OT_selectfaces.bl_idname, text="", icon="STICKY_UVS_LOC").select_all = True
+        b1r2.operator(VNT_OT_selectfaces.bl_idname, text="", icon="STICKY_UVS_DISABLE").select_all = False
+        b1r2.operator(VNT_OT_faceactions.bl_idname, text="", icon="REMOVE").action = "REMOVE"
+        b1r2.alert = True
+        b1r2.operator(VNT_OT_clearfaces.bl_idname, text="", icon="TRASH")
+        b1r2.alert = True
 
-        r3 = layout.row()
-        r3.scale_y = 1.4
-        r3.template_list("CUSTOM_UL_faces", "", cs, "fcustom", cs, "fcustom_index", rows=2)
+        b1r3 = box_1.row()
+        b1r3.scale_y = 1.4
+        b1r3.template_list("CUSTOM_UL_faces", "", cs, "fcustom", cs, "fcustom_index", rows=2)
+
+        box_2 = layout.box()
+        b2r0 = box_2.row()
+        b2r0.label(text="Face Merging")
+
+        b2r1 = box_2.row()
+        b2r1.operator(VNT_OT_merge_faces.bl_idname, text="Merge Faces")
+        b2r1.alert = True
+        b2r1.operator(VNT_OT_merge_faces_delete.bl_idname, text="", icon="TRASH")
+
+        b2r2 = box_2.row()
+        b2r2.template_list("CUSTOM_UL_face_merge", "", cs, "fmcustom", cs, "fmcustom_index", rows=2)
 
     def VNT_ST_step_controls(self, layout, context):
         cs = context.scene

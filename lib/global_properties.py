@@ -10,6 +10,8 @@ import bpy
 
 from bpy.types import PropertyGroup
 
+from venturial.models.blockmesh.boundary_control_operators import list_current_faces
+
 class CUSTOM_LocProps(bpy.types.PropertyGroup):
     vert_loc: FloatVectorProperty(name='verts')
 
@@ -69,7 +71,9 @@ class VNT_global_properties_collection(PropertyGroup):
                                    min = 0.0,
                                    max = 1.0,
                                    default = (1.0,1.0,1.0,1.0))
-                           
+    
+    master_face : EnumProperty("Master Face", items=list_current_faces)
+    slave_face : EnumProperty("Slave Face", items=list_current_faces)
     
     b_name: StringProperty()
     setcellx: IntProperty()
