@@ -204,7 +204,7 @@ class VNT_OT_fill_dict_file(Operator):
             
         #Add blocks to Dictionary
         for i in scn.bcustom:
-            bmdict['blocks'].append([hex_strtolist(i.name), [scn.cell_x, scn.cell_y, scn.cell_z], i.grading]) 
+            bmdict['blocks'].append([hex_strtolist(i.name), [i.setcellx, i.setcelly, i.setcellz], i.grading]) 
             
         #Add boundary(faces) to Dictionary
         for i in scn.fcustom:
@@ -258,7 +258,16 @@ class VNT_OT_fill_dict_file(Operator):
             vert_index.append(bmdict["vertices"].index(list(edge.vc[0].vert_loc)))
             vert_index.append(bmdict["vertices"].index(list(edge.vc[2].vert_loc)))
 
-            e_verts = [list(v.vert_loc) for v in edge.vert_collection]
+            # f"{context.scene.ecustom[context.scene.ecustom_index].name}0{index+1}"
+            # ob = bpy.data.objects[sr]
+            # layout.prop(ob, 'location')
+
+            e_verts = []
+            length = len(edge.vert_collection)
+            for i in range(length):
+                _a_ = bpy.data.objects[f"{edge.name}0{i+1}"]
+                e_verts.append(list(_a_.location))
+            # e_verts = [list(v.vert_loc) for v in edge.vert_collection]
             bmdict["edges"].append([e_type, vert_index, e_verts])  
             
         m = json.dumps(bmdict, sort_keys=True, indent=2)
