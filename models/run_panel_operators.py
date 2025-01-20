@@ -258,10 +258,6 @@ class VNT_OT_fill_dict_file(Operator):
             vert_index.append(bmdict["vertices"].index(list(edge.vc[0].vert_loc)))
             vert_index.append(bmdict["vertices"].index(list(edge.vc[2].vert_loc)))
 
-            # f"{context.scene.ecustom[context.scene.ecustom_index].name}0{index+1}"
-            # ob = bpy.data.objects[sr]
-            # layout.prop(ob, 'location')
-
             e_verts = []
             length = len(edge.vert_collection)
             for i in range(length):
