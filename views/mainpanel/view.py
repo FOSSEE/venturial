@@ -91,40 +91,42 @@ class layout_controller:
         else:
             getattr(snappyhexmesh_menu(), "layout")(tools, context)
 
-        projects = layout.box()
-        r7 = projects.row() 
+
+        # THis feature is to be implemented later down the line
+        # projects = layout.box()
+        # r7 = projects.row() 
 
         # This shabby piece of code is similar to the draw method of top navigation bar, but relatively better.
         # This creates a horizontal tabs list of active projects (cases) dynamically. 
-        for i in range(0, len(cs.mfile_item)):
-            x = r7.column(align=True).row(align=True)
+        # for i in range(0, len(cs.mfile_item)):
+        #     x = r7.column(align=True).row(align=True)
             
-            x.operator("VNT_OT_active_project_indicator", 
-                       text=cs.mfile_item[i].ITEM_name, 
-                       emboss = True if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else False).active_file_id = cs.mfile_item[i].ITEM_identifier
+        #     x.operator("VNT_OT_active_project_indicator", 
+        #                text=cs.mfile_item[i].ITEM_name, 
+        #                emboss = True if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else False).active_file_id = cs.mfile_item[i].ITEM_identifier
             
-            x.operator("vnt.deactivate_mesh_file_item",
-                       text="",
-                       emboss = True if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else False,
-                       icon="PANEL_CLOSE").dump_file_id = cs.mfile_item[i].ITEM_identifier
+        #     x.operator("vnt.deactivate_mesh_file_item",
+        #                text="",
+        #                emboss = True if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else False,
+        #                icon="PANEL_CLOSE").dump_file_id = cs.mfile_item[i].ITEM_identifier
             
-            x.scale_y = 1.7 if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else 1.9
-            x.scale_x = 0.9730 + len(cs.mfile_item)*(0.009 if len(cs.mfile_item) == 3 else 0.01) if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else 1.0
+        #     x.scale_y = 1.7 if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else 1.9
+        #     x.scale_x = 0.9730 + len(cs.mfile_item)*(0.009 if len(cs.mfile_item) == 3 else 0.01) if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier else 1.0
     
-        r7.ui_units_y = 0.00001
+        # r7.ui_units_y = 0.00001
             
-        r8 = projects.row(align=True)
-        for i in range(0, len(cs.mfile_item)):
-            y = r8.column(align=True)
-            if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier:
-                y.label(text="") # Active tab in the view
-            else:
-                y.scale_y = 0.8
-                y.box().label(text="") # Passive tabs in the view
+        # r8 = projects.row(align=True)
+        # for i in range(0, len(cs.mfile_item)):
+        #     y = r8.column(align=True)
+        #     if cs.mfile_item[i].ITEM_identifier == cs.mfile_item[cs.mfile_item_index].ITEM_identifier:
+        #         y.label(text="") # Active tab in the view
+        #     else:
+        #         y.scale_y = 0.8
+        #         y.box().label(text="") # Passive tabs in the view
         
-        r10 = projects.row()
-        r10.scale_y = 1.4
-        r10.template_list("CUSTOM_UL_blocks", "", cs, "bcustom", cs, "bcustom_index", rows=2)
+        # r10 = projects.row()
+        # r10.scale_y = 1.4
+        # r10.template_list("CUSTOM_UL_blocks", "", cs, "bcustom", cs, "bcustom_index", rows=2)
                    
     def VNT_ST_visualize(self, layout, context):
         outline = layout.box()

@@ -5,7 +5,7 @@ class get_vertices:
     def draw(self, ptr, context):
         cs = context.scene
         spt = ptr.column().split()
-        spt.ui_units_y = 0.75
+        spt.ui_units_y = 1.25
         c1 = spt.row(align=True)
         c1.scale_y = 1.25
         c2 = spt.column(align=True).split(align=True)
@@ -31,7 +31,7 @@ class get_vertices:
             text=None,
         ).select_all = False
 
-        c2.scale_y = 1.25
+        c2.scale_y = 1.4
         c2.alert = True
         c2.operator(VNT_OT_vertactions.bl_idname, icon="REMOVE", text=None).action = (
             "REMOVE"
@@ -40,7 +40,7 @@ class get_vertices:
         c2.alert = False
 
         row = ptr.row()
-        row.scale_y = 1.2
+        row.scale_y = 1.4
         row.template_list(
             "CUSTOM_UL_verts", "", cs, "vcustom", cs, "vcustom_index", rows=2
         )

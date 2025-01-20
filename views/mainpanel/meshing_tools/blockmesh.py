@@ -89,8 +89,6 @@ class blockmesh_menu:
         r5c2c1.prop(cs, "cell_z", toggle=True)
         
         r5c2c2.prop(cs, "ctm", slider=True)
-
-        getattr(get_vertices(), "draw")(tools, context)
         
         row6 = tools.row()
         row6.scale_y = 1.3
@@ -128,8 +126,12 @@ class blockmesh_menu:
         row6bb2.operator(VNT_OT_remove_blocks.bl_idname, icon="CANCEL", text="")
         row6bb2.operator(VNT_OT_remove_all_blocks.bl_idname, icon="TRASH", text="")
         row6bb2.operator(VNT_OT_clearblocks.bl_idname, icon="TRASH", text="")
-        
-        
+
+        row7 = tools.row()
+        row7.scale_y = 1.4
+        row7.template_list("CUSTOM_UL_blocks", "", cs, "bcustom", cs, "bcustom_index", rows=2)
+
+        getattr(get_vertices(), "draw")(tools, context)
 
 
 class VNT_PT_cell_location(Panel):

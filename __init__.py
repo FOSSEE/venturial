@@ -125,6 +125,7 @@ classes = (
     VNT_global_properties_collection,
     VNT_UL_mesh_file_manager,
     VNT_UL_mesh_file_coroner,
+    CUSTOM_UL_verts,
     CUSTOM_UL_blocks,
     CUSTOM_UL_faces,
     CUSTOM_UL_edges_Main,
