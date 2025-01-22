@@ -251,11 +251,11 @@ class layout_controller:
         row2 = layout.row()
         row2.operator('vnt.new_vert')
         row2.operator('vnt.remove_vert')
-        row3 = layout.row(align=True)
-        row3.label(text="Vertex Coordinates")
-        row3.prop(cs, "vertx")
-        row3.prop(cs, "verty")
-        row3.prop(cs, "vertz")
+        # row3 = layout.row(align=True)
+        # row3.label(text="Vertex Coordinates")
+        # row3.prop(cs, "vertx")
+        # row3.prop(cs, "verty")
+        # row3.prop(cs, "vertz")
 
         if len(ec):
             layout.prop(ec[cs.ecustom_index], "color")

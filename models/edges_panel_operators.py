@@ -116,12 +116,12 @@ class VNT_OT_new_vert(Operator):
         
         self.curr_edge.vc[0].vert_loc=x
         self.curr_edge.vc[2].vert_loc=y
-        # coord = [None, None, None]
+        coord = [None, None, None]
 
-        # for i in range(3):
-        #     coord[i] = (x[i] + y[i])/1.5
+        for i in range(3):
+            coord[i] = (x[i] + y[i])/1.5
 
-        coord = [cs.vertx, cs.verty, cs.vertz]
+        # coord = [cs.vertx, cs.verty, cs.vertz]
         
         self.curr_edge.vert_collection.add()
         self.curr_edge.vert_collection[0].vert_loc=coord
