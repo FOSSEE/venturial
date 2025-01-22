@@ -326,7 +326,7 @@ class VNT_OT_boundary_data_control(Operator):
         # cs = context.scene
 
         vertex_props = self.get_vertex_properties(geo)
-
+        # print(vertex_props)
         res = []
 
         for item in cs.fcustom:

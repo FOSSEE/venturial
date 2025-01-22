@@ -40,6 +40,15 @@ def update_face_mode(self, context):
         me.update()
         
     else:
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE', action='TOGGLE')
+        obj = context.edit_object
+        me = obj.data
+        bm = bmesh.from_edit_mesh(me)
+        
+        for f in bm.faces:
+            f.select = True
+        bm.select_flush_mode()   
+        me.update()
         bpy.ops.object.mode_set(mode = 'OBJECT')
         
 
