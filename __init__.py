@@ -129,6 +129,7 @@ classes = (
     CUSTOM_UL_faces,
     CUSTOM_UL_edges_Main,
     CUSTOM_UL_edges_Sub,
+    CUSTOM_UL_face_merge,
     VNT_OT_faceactions,
     VNT_OT_set_face_name,
     VNT_OT_set_type_face,
@@ -156,6 +157,8 @@ classes = (
     VNT_OT_vertex_data_control,
     VNT_OT_edge_data_control,
     VNT_OT_boundary_data_control,
+    VNT_OT_merge_faces,
+    VNT_OT_merge_faces_delete,
     # VNT_OT_generate_edge,
     # VNT_OT_edit_edge,
     # VNT_OT_destroy_edge,
@@ -344,16 +347,22 @@ def register():
     bpy.types.Scene.simblk = CollectionProperty(type=VNT_global_properties_collection)
     bpy.types.Scene.simblk_index = IntProperty()
 
-    bpy.types.Scene.bcustom = CollectionProperty(type=VNT_global_properties_collection)
+    bpy.types.Scene.bcustom = CollectionProperty(type=VNT_global_properties_collection) # for blocks
     bpy.types.Scene.bcustom_index = IntProperty()
 
-    bpy.types.Scene.vcustom = CollectionProperty(type=VNT_global_properties_collection)
+    bpy.types.Scene.vcustom = CollectionProperty(type=VNT_global_properties_collection) # for vertices
     bpy.types.Scene.vcustom_index = IntProperty()
 
-    bpy.types.Scene.fcustom = CollectionProperty(type=VNT_global_properties_collection)
+    bpy.types.Scene.fcustom = CollectionProperty(type=VNT_global_properties_collection) # for faces
     bpy.types.Scene.fcustom_index = IntProperty()
 
-    bpy.types.Scene.ecustom = CollectionProperty(type=VNT_global_properties_collection_edge_verts)
+    bpy.types.Scene.faceList_master = EnumProperty("Face List", items=list_current_faces)
+    bpy.types.Scene.faceList_slave = EnumProperty("Face List", items=list_current_faces)
+
+    bpy.types.Scene.fmcustom = CollectionProperty(type=VNT_global_properties_collection) # for face merging
+    bpy.types.Scene.fmcustom_index = IntProperty()
+
+    bpy.types.Scene.ecustom = CollectionProperty(type=VNT_global_properties_collection_edge_verts) # for edges
     bpy.types.Scene.ecustom_index = IntProperty()
 
     bpy.types.Scene.vert_index = IntProperty(name="Vertex Index", default=0)
