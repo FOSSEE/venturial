@@ -67,6 +67,15 @@ class VNT_OT_new_vert(Operator):
     bl_idname = "vnt.new_vert"
     bl_label = "Generate new Vertex"
 
+    @classmethod
+    def poll(cls, context):
+        cs = context.scene
+        if len(cs.ecustom) == 0:
+            return True
+        else:
+            curr_edge = cs.ecustom[cs.ecustom_index]
+            return curr_edge.edge_type != 'ARC' or len(curr_edge.vert_collection) == 0
+
     def execute(self, context):
         cs = context.scene
         try:
@@ -120,8 +129,6 @@ class VNT_OT_new_vert(Operator):
 
         for i in range(3):
             coord[i] = (x[i] + y[i])/1.5
-
-        # coord = [cs.vertx, cs.verty, cs.vertz]
         
         self.curr_edge.vert_collection.add()
         self.curr_edge.vert_collection[0].vert_loc=coord

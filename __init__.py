@@ -359,11 +359,6 @@ def register():
 
     bpy.types.Scene.vert_index = IntProperty(name="Vertex Index", default=0)
 
-    # Temporary Vertex Properties. To be changed later
-    bpy.types.Scene.vertx = FloatProperty(name="X", default=0.0)
-    bpy.types.Scene.verty = FloatProperty(name="Y", default=0.0)
-    bpy.types.Scene.vertz = FloatProperty(name="Z", default=0.0)
-
     bpy.types.Scene.edge_control_methods = EnumProperty(
         items=[("IP", "Interpolation Points", ""), ("AA", "Axis angle", "")],
         default="IP",
@@ -569,9 +564,6 @@ def unregister():
     del bpy.types.Scene.ecustom
     del bpy.types.Scene.ecustom_index
     del bpy.types.Scene.vert_index
-    del bpy.types.Scene.vertx
-    del bpy.types.Scene.verty
-    del bpy.types.Scene.vertz
     del bpy.types.Scene.cnt
     del bpy.types.Scene.mode
     del bpy.types.Scene.bdclist
