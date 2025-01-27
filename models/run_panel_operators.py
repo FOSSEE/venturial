@@ -76,11 +76,11 @@ def write_dict(m, out_fp):
             ename=edg[0]+" "+str(edg[1][0])+" "+str(edg[1][1])
             ed=[]
             if(ename[:3]=="arc"):
-                blockdict.append(ename+" "+listToOFStr(edg[2]))
+                blockdict.append(ename+" "+listToOFStr(edg[2][0]))
             else:
                 for e in edg[2]:
                     ed.append(listToOFStr(e))
-                    
+
                 blockdict.append(ename)
                 blockdict.append("(")
                 for e in ed:
@@ -117,10 +117,14 @@ def write_dict(m, out_fp):
             blockdict.append("}")
     blockdict.append(");")
     #--------boundaries end------------
+
     #-------mergePatchPairs start---------
     #todo
     blockdict.append("mergePatchPairs")
     blockdict.append("(")
+    mergePatchPairs=data['mergePatchPairs']
+    for mpp in mergePatchPairs:
+        blockdict.append(f"({mpp[0]} {mpp[1]})")
     blockdict.append(");")
     #-------mergePatchPairs end---------
 
@@ -203,18 +207,21 @@ class VNT_OT_fill_dict_file(Operator):
             
         #Add blocks to Dictionary
         for i in scn.bcustom:
-            bmdict['blocks'].append([hex_strtolist(i.name), [scn.cell_x, scn.cell_y, scn.cell_z], i.grading]) 
+            bmdict['blocks'].append([hex_strtolist(i.name), [i.setcellx, i.setcelly, i.setcellz], i.grading]) 
             
         #Add boundary(faces) to Dictionary
         for i in scn.fcustom:
             bmdict['boundary'].append([i.face_des, i.face_type, face_strtolist(i.name)])
     
         # Add Edges(arc, polyLine, spline, BSpline) to Dictionary
-        cp_edge_list = [scn.acustom, scn.pcustom, scn.scustom, scn.bscustom]
-        edge_type = ["arc", "polyLine", "spline", "BSpline"]
-        
-        for ix in range(0, len(cp_edge_list)):
-            
+
+        # cp_edge_list = [scn.acustom, scn.pcustom, scn.scustom, scn.bscustom]
+        # cp_edge_list = [scn.ecustom]
+        # edge_type = ["arc", "polyLine", "spline", "BSpline"]     
+
+        for ix in range(0, len(scn.ecustom)): # change the way edges are stored
+
+            ''' Old code
             if ix == 0:
                 for i in cp_edge_list[ix]:
                     bmdict['edges'].append([edge_type[ix], edge_strtolist(i.fandl), [i.intptx, i.intpty, i.intptz]])
@@ -235,6 +242,36 @@ class VNT_OT_fill_dict_file(Operator):
                 for k in range(0, len(ret)):
                     bmdict['edges'].append([edge_type[ix], ret[k], ev[k]])
             
+            '''
+            
+            vert_index = []
+            edge = scn.ecustom[ix]
+
+            edge_type = {
+                "ARC": "arc",
+                "PLY": "polyLine",
+                "SPL": "spline",
+                "BSPL": "BSpline"
+            }
+
+            e_type = edge_type[edge.edge_type]
+
+            vert_index.append(bmdict["vertices"].index(list(edge.vc[0].vert_loc)))
+            vert_index.append(bmdict["vertices"].index(list(edge.vc[2].vert_loc)))
+
+            e_verts = []
+            length = len(edge.vert_collection)
+            for i in range(length):
+                _a_ = bpy.data.objects[f"{edge.name}0{i+1}"]
+                e_verts.append(list(_a_.location))
+            # e_verts = [list(v.vert_loc) for v in edge.vert_collection]
+            bmdict["edges"].append([e_type, vert_index, e_verts])  
+            
+        # Add MergePatchPairs to Dictionary
+        for i in scn.fmcustom:
+            pair = (i.master_face, i.slave_face)
+            bmdict['mergePatchPairs'].append(pair)
+
         m = json.dumps(bmdict, sort_keys=True, indent=2)
         text_obj.from_string(m) 
         

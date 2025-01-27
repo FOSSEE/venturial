@@ -410,3 +410,67 @@ class VNT_OT_clearfaces(Operator):
         else:
             self.report({'INFO'}, "Nothing to remove")
         return{'FINISHED'}
+
+# Operators for mergepatchpairs
+class VNT_OT_merge_faces(Operator):
+    bl_idname = "vnt.merge_faces"
+    bl_label = "Merge Faces"
+    bl_description = "Merge selected Faces"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def draw(self, context):
+        layout = self.layout
+        cs = context.scene
+
+        r1 = layout.row(align=True)
+        r1.label(text="Master Face:")
+        r1.prop(cs, "faceList_master")
+
+        r2 = layout.row(align=True)
+        r2.label(text="Slave:")
+        r2.prop(cs, "faceList_slave")
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=300)
+    
+    def execute(self, context):  
+        cs = context.scene
+        
+        if cs.faceList_master == cs.faceList_slave:
+            self.report({'ERROR'}, "Master and Slave faces cannot be same")
+            return {'CANCELLED'}
+        else: 
+            item = cs.fmcustom.add()
+            item.master_face = cs.faceList_master
+            item.slave_face = cs.faceList_slave
+        
+        return {'FINISHED'}
+
+class VNT_OT_merge_faces_delete(Operator):
+    bl_idname = "vnt.merge_faces_delete"
+    bl_label = "Separate Faces"
+    bl_description = "Separate selected Face pairs"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return bool(context.scene.fmcustom)
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_confirm(self, event)
+
+    def execute(self, context):
+        if bool(context.scene.fcustom):
+            context.scene.fmcustom.clear()
+            self.report({'INFO'}, "All items removed")
+        else:
+            self.report({'INFO'}, "Nothing to remove")
+        return{'FINISHED'}
+
+
+
+def list_current_faces(self, context):
+    items = []
+    for i, f in enumerate(context.scene.fcustom):
+        items.append((str(f.face_des), f.face_des, f"{f.face_des}, {f.name}"))
+    return items
