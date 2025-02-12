@@ -11,11 +11,11 @@ class default_properties:
                                    'default_user_data_path_checkbox',
                                    'default_user_data_path']
         self.default_prefs_values = [False, 
-                                     bpy.utils.script_paths(subdir='addons')[1]+"/venturial/user_data/",
+                                     bpy.utils.script_paths(subdir='addons')[-1]+"/venturial/user_data/",
                                      False,
-                                     bpy.utils.script_paths(subdir='addons')[1]+"/venturial/tutorials/",
+                                     bpy.utils.script_paths(subdir='addons')[-1]+"/venturial/tutorials/",
                                      False,
-                                     bpy.utils.script_paths(subdir='addons')[1]+"/venturial/user_data/"]
+                                     bpy.utils.script_paths(subdir='addons')[-1]+"/venturial/user_data/"]
         self.default_prefs_dict = {}
         
         
